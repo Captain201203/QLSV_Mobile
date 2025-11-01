@@ -1,0 +1,1 @@
+{"version":3,"file":"controller.d.ts","sourceRoot":"","sources":["controller.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,OAAO,EAAE,QAAQ,EAAC,MAAM,SAAS,CAAC;AAG1C,eAAO,MAAM,iBAAiB;gBACR,OAAO,OAAO,QAAQ;iBAUrB,OAAO,OAAO,QAAQ;gBAqBvB,OAAO,OAAO,QAAQ;gBAWtB,OAAO,OAAO,QAAQ;gBAsBrB,OAAO,OAAO,QAAQ;CAmB5C,CAAA"}

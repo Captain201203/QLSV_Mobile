@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý lớp học</title>
+    <style>
+        body {font-family: Arial; margin: 20px;}
+        table{border-collapse: collapse; width: 100%; margin-top: 20px;}
+        th, td{border: 1px solid #ccc; padding: 8px; text-align: left;}
+        th{background-color: #f0f0f0;}
+        input, button { margin: 5px; padding: 5px}
+    </style>
+</head>
+<body>
+    <h2>Quản lý lớp học</h2>
+    <div>
+        <input type="text" id="classId" placeholder="Mã lớp học">
+        <input type="text" id="className" placeholder="Tên lớp học">
+        <input type="text" id="department" placeholder="Khoa">
+        <button onclick="createClass()">Thêm lớp học</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Mã lớp</th>
+                <th>Tên lớp</th>
+                <th>Khoa</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="classTableBody"></tbody>
+    </table>
+
+    <script>
+        const API_URL = 'http://localhost:3000/classes';
+
+        async function fetchClasses(){
+            try {
+                const res = await fetch(API_URL);
+                const classes = await res.json();
+                console.log("Dữ liệu lớp học từ server:", classes);
+
+                const tbody = document.getElementById("classTableBody");
+                tbody.innerHTML = '';
+
+                classes.forEach(c => {
+                    console.log("Xử lý lớp học:", c);
+
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${c.classId || 'N/A'}</td>
+                        <td>${c.className || 'N/A'}</td>
+                        <td>${c.department || 'N/A'}</td>
+                        <td>
+                            <button onclick="updateClass('${c._id}')">Sửa</button>
+                            <button onclick="deleteClass('${c._id}')">Xóa</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu lớp học:", error);
+                alert("Không thể tải danh sách lớp học");
+            }
+        }
+
+        async function createClass(){
+            try {
+                const data = {
+                    classId: document.getElementById("classId").value,
+                    className: document.getElementById("className").value,
+                    department: document.getElementById("department").value,
+                };
+
+                console.log("Dữ liệu lớp học gửi đi:", data);
+
+                // Validate dữ liệu
+                if (!data.classId || !data.className || !data.department) {
+                    alert("Vui lòng điền đầy đủ thông tin lớp học");
+                    return;
+                }
+
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                console.log("Phản hồi từ server:", result);
+
+                if (!res.ok) {
+                    throw new Error(result.message || "Không thể thêm lớp học");
+                }
+                
+                await fetchClasses();
+                alert("Thêm lớp học thành công!");
+                
+                // Clear form
+                document.getElementById("classId").value = '';
+                document.getElementById("className").value = '';
+                document.getElementById("department").value = '';
+                
+            } catch (err) {
+                console.error("Lỗi:", err);
+                alert("Lỗi khi thêm lớp học: " + err.message);
+            }
+        }
+
+        async function updateClass(id){
+            // Chức năng cập nhật lớp học (nếu cần)
+            const data = {
+                classId: document.getElementById("classId").value,
+                className: document.getElementById("className").value,
+                department: document.getElementById("department").value,
+            };
+            // Gửi yêu cầu cập nhật đến server (nếu cần)
+            await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data)
+            });
+            await fetchClasses();
+        }
+
+        async function deleteClass(id){
+            if(!confirm("Bạn có chắc muốn xóa lớp học này?")) return;
+            await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            await fetchClasses();
+        }
+
+
+        // ✅ Gọi khi load trang
+        fetchClasses();
+    </script>
+</body>
+</html>

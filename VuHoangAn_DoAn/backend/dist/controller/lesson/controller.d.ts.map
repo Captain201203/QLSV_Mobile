@@ -1,0 +1,1 @@
+{"version":3,"file":"controller.d.ts","sourceRoot":"","sources":["../../../src/controller/lesson/controller.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAG5C,eAAO,MAAM,gBAAgB;gBACP,OAAO,OAAO,QAAQ;iBASrB,OAAO,OAAO,QAAQ;qBAoBlB,OAAO,OAAO,QAAQ;gBAe3B,OAAO,OAAO,QAAQ;gBAsBtB,OAAO,OAAO,QAAQ;gBAyBtB,OAAO,OAAO,QAAQ;CAmB3C,CAAC;AAEF,eAAe,gBAAgB,CAAC"}

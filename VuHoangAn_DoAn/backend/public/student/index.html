@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý sinh viên</title>
+    <style>
+        body {font-family: Arial; margin: 20px;}
+        table{border-collapse: collapse; width: 100%; margin-top: 20px;}
+        th, td{border: 1px solid #ccc; padding: 8px; text-align: left;}
+        th{background-color: #f0f0f0;}
+        input, button { margin: 5px; padding: 5px}
+    </style>
+</head>
+<body>
+    <h2>Student Management</h2>
+    <div>
+        <input type="text" id="studentId" placeholder="Mã sinh viên">
+        <input type="text" id="studentName" placeholder="Họ tên sinh viên">
+        
+        <input type="date" id="dateOfBirth">
+        <input type="text" id="phoneNumber" placeholder="Số điện thoại">
+        <input type="text" id="email" placeholder="Email">
+        <button onclick="createStudent()">Thêm sinh viên</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Mã sinh viên</th>
+                <th>Họ tên sinh viên</th>
+                
+                <th>Ngày sinh</th>
+                <th>Số điện thoại</th>
+                <th>Email</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="studentTableBody"></tbody>
+    </table>
+
+    <script>
+        const API_URL = 'http://localhost:3000/students';
+
+        async function fetchStudents(){
+            const res = await fetch(API_URL);
+            const students = await res.json();
+            console.log("Dữ liệu sinh viên từ server:", students);
+            
+            const tbody = document.getElementById("studentTableBody");
+            tbody.innerHTML = '';
+
+            students.forEach(s => {
+                console.log("Xử lý sinh viên:", s);
+                console.log("dateOfBirth:", s.dateOfBirth, "Type:", typeof s.dateOfBirth);
+                
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${s.studentId}</td>
+                    <td>${s.studentName}</td>
+                    
+                    <td>${s.dateOfBirth ? new Date(s.dateOfBirth).toLocaleDateString('vi-VN') : 'Chưa có thông tin'}</td>
+                    <td>${s.phoneNumber}</td>
+                    <td>${s.email}</td>
+                    <td>
+                        <button onclick="updateStudent('${s._id}')">Sửa</button>
+                        <button onclick="deleteStudent('${s._id}')">Xóa</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function createStudent(){
+            try {
+                const dateOfBirthValue = document.getElementById("dateOfBirth").value;
+                
+                const data = {
+                    studentId: document.getElementById("studentId").value,
+                    studentName: document.getElementById("studentName").value,
+                    
+                    dateOfBirth: dateOfBirthValue ? new Date(dateOfBirthValue).toISOString() : null,
+                    phoneNumber: document.getElementById("phoneNumber").value,
+                    email: document.getElementById("email").value,
+                };
+
+                console.log("Dữ liệu gửi đi:", data);
+                console.log("dateOfBirth raw:", dateOfBirthValue);
+                console.log("dateOfBirth processed:", data.dateOfBirth);
+
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                console.log("Phản hồi từ server:", result);
+
+                if (!res.ok) {
+                    throw new Error(result.message || "Không thể thêm sinh viên");
+                }
+                
+                await fetchStudents();
+                alert("Thêm thành công!");
+                
+                // Clear form
+                document.getElementById("studentId").value = '';
+                document.getElementById("studentName").value = '';
+                
+                document.getElementById("dateOfBirth").value = '';
+                document.getElementById("phoneNumber").value = '';
+                document.getElementById("email").value = '';
+                
+            } catch (err) {
+                console.error("Lỗi:", err);
+                alert("Lỗi khi thêm sinh viên: " + err.message);
+            }
+        }
+
+        async function updateStudent(id){
+            const newName = prompt("Nhập tên mới:");
+            if(!newName) return;
+            await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({studentName: newName})
+            });
+            await fetchStudents();
+        }
+
+        async function deleteStudent(id){
+            if(!confirm("Bạn có chắc muốn xóa sinh viên này không?")) return;
+            await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            await fetchStudents();
+        }
+
+        // ✅ Gọi khi load trang
+        fetchStudents();
+    </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+studentId,studentName,dateOfBirth,phoneNumber,email,className
+SV001,Nguyễn Văn An,2000-01-15,0123456789,nguyenvana@email.com,CNTT01
+SV002,Trần Thị Bình,2000-03-20,0987654321,tranthibinh@email.com,CNTT01
+SV003,Lê Văn Cường,2000-05-10,0369258147,levancuong@email.com,KTPM01
+SV004,Phạm Thị Dung,2000-07-25,0912345678,phamthidung@email.com,KTPM01
+SV005,Hồ Văn Em,2000-09-12,0945678901,hovanem@email.com,ATTT01
+
+
