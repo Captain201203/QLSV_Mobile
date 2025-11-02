@@ -1,0 +1,1 @@
+{"version":3,"file":"model.d.ts","sourceRoot":"","sources":["../../../src/models/lessonItem/model.ts"],"names":[],"mappings":"AAAA,OAAO,QAAQ,EAAE,EAAE,QAAQ,EAAU,MAAM,UAAU,CAAC;AAEtD,MAAM,WAAW,WAAY,SAAQ,QAAQ;IAC3C,MAAM,EAAE,MAAM,CAAC;IACf,QAAQ,EAAE,MAAM,CAAC;IACjB,KAAK,EAAE,MAAM,CAAC;IACd,OAAO,EAAE,MAAM,CAAC;IAChB,KAAK,EAAE,MAAM,CAAC;CACf;;;;AAUD,wBAA2E"}

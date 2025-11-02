@@ -10,8 +10,9 @@ import cors from "cors";
 import accountRoute from "./routes/account/route.js";
 import courseRoute from "./routes/course/route.js";
 import lessonRoute from "./routes/lesson/route.js";
-import materialRoute from "./routes/material/route.js";
+import lessonItemRoute from "./routes/lessonItem/route.js";
 import scoreRoute from "./routes/score/route.js";
+import forgotPasswordRoute from "./routes/auth/forgotPassword.js";
 // Load environment variables
 dotenv.config({ path: ".env.local" });
 const app = express();
@@ -41,7 +42,8 @@ app.use("/schedules", scheduleRoute);
 app.use("/accounts", accountRoute);
 app.use("/courses", courseRoute);
 app.use("/lessons", lessonRoute);
-app.use("/materials", materialRoute);
+app.use("/", forgotPasswordRoute);
+app.use("/lessonItems", lessonItemRoute);
 app.use("/scores", scoreRoute);
 const startServer = async () => {
     try {

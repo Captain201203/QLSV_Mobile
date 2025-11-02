@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/screens/admin/admin_home_screen.dart';
 import 'home_screen.dart';
 import '../../services/student_service.dart';
+import '../auth/forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key}); // Khởi tạo LoginScreen
@@ -136,6 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     keyboardType: TextInputType.emailAddress, // kiểu bàn phím là email
                     decoration: InputDecoration( // trang trí cho trường nhập email
                       labelText: 'Email', // nhãn hiển thị
+                      prefixIcon: const Icon(Icons.email_outlined), // thêm icon email phía trước
                       enabledBorder: OutlineInputBorder( // viền khi không được chọn 
                         borderSide: const BorderSide(color: Colors.blue), // màu viền xanh dương
                         borderRadius: BorderRadius.circular(20), // bo góc cho trường nhập 20 
@@ -152,14 +154,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 15), // khoảng cách với trường nhập mật khẩu là 15
 
-                  // passwod field: trường nhập password
+                  // password field: trường nhập password
                   TextField(
-                    controller: _passwordController, // khai báo controller cho trường mật khẩu
+                    controller: _passwordController, // khai báo controller cho trường mật khẩu 
                     obscureText: true, // ẩn văn bản nhập vào ( dấu * )
                     decoration: InputDecoration( // trang trí cho trường nhập mật khẩu
                       labelText: 'Mật khẩu',
+                      prefixIcon: const Icon(Icons.lock_outline), // thêm icon khóa phía trước
                       enabledBorder: OutlineInputBorder( // viền khi không được chọn
-                        borderSide: const BorderSide(color: Colors.blue), // màu viền xanh dương
+                        borderSide: const BorderSide(color: Colors.blue), // màu viền xanh dương 
                         borderRadius: BorderRadius.circular(20), 
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -189,7 +192,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   Align( // căn chỉnh cho con, là TextButton
                     alignment: Alignment.centerRight,   // căn phải
                     child: TextButton( // nút văn bản
-                      onPressed: () {}, // hàm khi nhấn nút ( hiện chưa làm gì )
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ForgotPasswordScreen(),
+                          ),
+                        );
+                      },
                       child: const Text( 
                         'Quên mật khẩu?', // nút quên mật khẩu
                         style: TextStyle(color: Colors.black87),// màu chữ xám đậm

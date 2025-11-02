@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme.dart';
 import '../../../models/subject.dart';
+import '../../../services/subject_service.dart';
 
 class SubjectForm extends StatefulWidget {
   final Subject? subject; 
@@ -37,6 +38,8 @@ class _SubjectFormState extends State<SubjectForm> {
     _creditsController.dispose();
     super.dispose();
   }
+
+  bool _isSaving = false;
 
   final List<String> majors = [
     'Công nghệ thông tin',
@@ -184,32 +187,65 @@ class _SubjectFormState extends State<SubjectForm> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.save),
+                      icon: _isSaving ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.save),
                       label: Text(widget.subject == null ? 'Thêm Môn Học' : 'Cập Nhật Môn Học'),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          final updatedSubject = Subject(
-                            id: widget.subject?.id ?? '',
-                            subjectId: _subjectCodeController.text,
-                            subjectName: _subjectNameController.text,
-                            credits: int.parse(_creditsController.text),
-                            department: _selectedMajor!,
-                            description: widget.subject?.description,
-                          );
+                      onPressed: _isSaving
+                          ? null
+                          : () async {
+                              if (!_formKey.currentState!.validate()) return;
 
-                          Navigator.pop(context, updatedSubject);
+                              setState(() {
+                                _isSaving = true;
+                              });
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(widget.subject == null 
-                                  ? 'Đã thêm môn học thành công!' 
-                                  : 'Đã cập nhật môn học thành công!'),
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        }
-                      },
+                              final subjectToSave = Subject(
+                                id: widget.subject?.id ?? '',
+                                subjectId: _subjectCodeController.text.trim(),
+                                subjectName: _subjectNameController.text.trim(),
+                                credits: int.parse(_creditsController.text),
+                                department: _selectedMajor!,
+                                description: widget.subject?.description,
+                              );
+
+                              try {
+                                if (widget.subject == null) {
+                                  // Create new subject via API
+                                  final created = await SubjectService.createSubject(subjectToSave);
+                                  if (!mounted) return;
+                                  Navigator.pop(context, created);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Đã thêm môn học thành công!'),
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                } else {
+                                  // Update existing subject via API
+                                  final updated = await SubjectService.updateSubject(widget.subject!.id, subjectToSave.toJson());
+                                  if (!mounted) return;
+                                  Navigator.pop(context, updated);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Đã cập nhật môn học thành công!'),
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (!mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Lỗi khi lưu môn học: $e'),
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              } finally {
+                                if (mounted) setState(() => _isSaving = false);
+                              }
+                            },
                     ),
                   ),
                 ],

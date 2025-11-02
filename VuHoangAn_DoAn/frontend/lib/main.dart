@@ -3,6 +3,7 @@ import 'package:frontend/screens/student/select_account_screen.dart';
 import 'theme.dart';
 import 'screens/admin/nav_wrapper.dart';
 import 'screens/student/select_account_screen.dart';
+import 'screens/student/login_screen.dart';
 
 
 // -----------Điểm bắt đầu của ứng dụng---------
@@ -20,7 +21,7 @@ class StudentManagementApp extends StatelessWidget {
       title: 'Student Management App', // Tiêu đề ứng dụng
       debugShowCheckedModeBanner: false, // Ẩn banner debug
       theme: appTheme, // Theme mặc định của ứng dụng
-      home: const SelectAccountScreen(), // Trang chính khi mở app
+      home: const LoginScreen(), // Trang chính khi mở app
     );
   }
 }

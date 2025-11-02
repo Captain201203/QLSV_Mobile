@@ -1,7 +1,9 @@
 import { StudentService } from '../../services/student/service.js';
 import { ClassService } from '../../services/class/service.js';
 import StudentModel from '../../models/student/model.js';
+import AccountModel from '../../models/account/model.js';
 import StudentImportService from '../../services/student/import.js';
+import bcrypt from 'bcrypt';
 //Lấy sinh viên theo lớp
 export const getStudentInClass = async (req, res) => {
     try {
@@ -120,22 +122,34 @@ export const StudentController = {
     },
     async loginStudent(req, res) {
         try {
-            const { email, studentId } = req.body;
-            if (!email || !studentId) {
-                return res.status(400).json({ message: "Email và mã sinh viên là bắt buộc" });
+            const { email, password } = req.body;
+            if (!email || !password) {
+                return res.status(400).json({ message: "Email và mật khẩu là bắt buộc" });
             }
-            const student = await StudentModel.findOne({
-                email: email,
-                studentId: studentId
-            });
-            if (student) {
-                return res.status(200).json(student);
+            // 1. Tìm account theo email
+            const account = await AccountModel.findOne({ email });
+            if (!account) {
+                return res.status(404).json({ message: 'Tài khoản không tồn tại' });
             }
-            else {
-                return res.status(404).json({ message: 'Thông tin đăng nhập không đúng' });
+            // 2. Kiểm tra mật khẩu
+            const isValidPassword = await bcrypt.compare(password, account.password);
+            if (!isValidPassword) {
+                return res.status(401).json({ message: 'Mật khẩu không đúng' });
             }
+            // 3. Nếu là sinh viên, tìm thông tin sinh viên
+            if (account.role === 'sinh viên') {
+                const student = await StudentModel.findOne({ email });
+                if (student) {
+                    return res.status(200).json({
+                        ...student.toJSON(),
+                        role: account.role
+                    });
+                }
+            }
+            return res.status(403).json({ message: 'Tài khoản không phải là sinh viên' });
         }
         catch (error) {
+            console.error('Login error:', error);
             return res.status(500).json({ message: error.message });
         }
     },

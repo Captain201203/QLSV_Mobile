@@ -13,9 +13,11 @@ Tạo thời khóa biểu
 Sinh viên xem được thời khóa biểu
 
 => tiếp theo: quản lý điểm sinh viên
+              Quản lý thời khóa biểu: thời khóa biểu gán với lớp, đã có danh sách sinh viên trong lớp => tất cả sinh viên cùng 1 lớp có chung 1 thời khóa biểu
               sinh viên xem được điểm ( Quản lý điểm -> danh sách lớp - > danh sách sinh viên -> danh sách môn -> nhập các trường điểm)
               sinh viên quản lý được tài khoản ( thay đổi số điện thoại địa chỉ )
               nghiên cứu quản lý khóa học ( lms )
+              
 
 
 

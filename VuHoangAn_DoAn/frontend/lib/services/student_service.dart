@@ -39,14 +39,21 @@ class StudentService {
   }
 
   //Sinh viên đăng nhập
-  static Future<Student?> loginStudent(String email, String studentId) async {
+  static Future<Student?> loginStudent(String email, String password) async {
     try {
       final data = await ApiService.post('/students/login', {
         'email': email,
-        'studentId': studentId
-      }); // Gọi API POST đăng nhập với email và studentId trong body
+        'password': password
+      }); // Gọi API POST đăng nhập với email và password
       return Student.fromJson(data); // Trả về đối tượng Student nếu đăng nhập thành công
     } catch (e) {
+      if (e.toString().contains('404')) {
+        throw Exception('Tài khoản không tồn tại');
+      } else if (e.toString().contains('401')) {
+        throw Exception('Mật khẩu không đúng');
+      } else if (e.toString().contains('403')) {
+        throw Exception('Tài khoản không phải là sinh viên');
+      }
       throw Exception('Lỗi đăng nhập: $e');
     }
   }
