@@ -5,226 +5,193 @@ import 'exam_schedule_screen.dart';
 import 'notification_screen.dart';
 import 'settings_screen.dart';
 import '../../models/student.dart';
-
+import '../student/news_detail_screen.dart';
+import '../../widgets/bottom_nav.dart';
+import '../../widgets/quick_access.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String className;
-  final Student student;
+  final String? className;
+  final Student? student;
 
-  const HomeScreen({super.key, required this.className, required this.student});
+  const HomeScreen({super.key, this.className, this.student});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-  late List<Widget> _screens;
+  // Note: this screen was simplified to avoid requiring callers to always
+  // supply `className` and `student` when navigating via the BottomNavBar.
 
-  // Danh sách các màn hình tương ứng từng mục
-  @override
-  void initState() {
-    super.initState();
-    _screens = [
-      HomeContent(className: widget.className, student: widget.student), // truyền cả className và student
-      StudyInfoScreen(className: widget.className), // truyền className
-      const ExamScheduleScreen(), //
-      const NotificationScreen(),
-      SettingsScreen(student: widget.student),
-    ];
-  }
-
-  // Khi nhấn vào mục dưới thanh điều hướng
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index; // cập nhật chỉ mục được chọn
-    });
+  void _openNews(BuildContext context, Map<String, String> news) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => NewsDetailScreen(
+          title: news['title']!,
+          imageUrl: news['image']!,
+          content: news['content']!,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final newsList = [
+      {
+        'title':
+            'HUTECH đồng hành cùng các đại học quốc tế tại IRCIEST 2025: Gắn kết tri thức, hướng đến phát triển bền vững',
+        'image':
+            'https://file1.hutech.edu.vn/file/editor/homepage1/851429-z7144526260155_fe10d3d2718526e3881c888139a48785.jpg',
+        'content':
+            'Trường Đại học Công nghệ TP.HCM (HUTECH) phối hợp cùng các đại học quốc tế tổ chức Hội nghị IRCIEST 2025 nhằm gắn kết tri thức và hướng đến phát triển bền vững...',
+      },
+      {
+        'title':
+            'Sinh viên HUTECH giành giải cao tại cuộc thi Nghiên cứu Khoa học 2025',
+        'image':
+            'https://file1.hutech.edu.vn/file/editor/homepage1/658422-z7144526239882_e68e88d8c59dd574512c799f6e560660.jpg',
+        'content':
+            'Nhóm sinh viên Khoa CNTT HUTECH đã xuất sắc giành giải Nhất tại cuộc thi Nghiên cứu Khoa học cấp thành phố, khẳng định năng lực sáng tạo và ứng dụng công nghệ cao.',
+      },
+      {
+        'title':
+            'HUTECH tổ chức Ngày hội việc làm 2025 với hơn 200 doanh nghiệp',
+        'image':
+            'https://file1.hutech.edu.vn/file/editor/homepage1/910647-z7142224059195_af916da784d8b4aa1de23548ff457504.jpg',
+        'content':
+            'Ngày hội việc làm HUTECH 2025 thu hút hơn 200 doanh nghiệp trong và ngoài nước, mang đến hơn 5.000 cơ hội nghề nghiệp cho sinh viên ở mọi ngành học.',
+      },
+      {
+        'title':
+            'Lễ tốt nghiệp HUTECH 2025: Hơn 3.000 tân cử nhân chính thức ra trường',
+        'image':
+            'https://file1.hutech.edu.vn/file/editor/homepage1/221841-z7144526245956_36c9b012d1b2b1c1a22c097d03a1b353.jpg',
+        'content':
+            'Lễ tốt nghiệp năm 2025 diễn ra trang trọng tại Hội trường HUTECH, đánh dấu hành trình học tập thành công của hơn 3.000 tân cử nhân và kỹ sư các ngành.',
+      },
+      {
+        'title':
+            'CLB Sinh viên Tình nguyện HUTECH tổ chức chiến dịch “Mùa hè xanh 2025”',
+        'image':
+            'https://file1.hutech.edu.vn/file/editor/homepage1/221841-z7144526245956_36c9b012d1b2b1c1a22c097d03a1b353.jpg',
+        'content':
+            'Chiến dịch tình nguyện “Mùa hè xanh 2025” của sinh viên HUTECH diễn ra tại nhiều địa phương, mang lại nhiều hoạt động ý nghĩa cho cộng đồng và xã hội.',
+      },
+    ];
+
     return Scaffold(
-      body: _screens[_selectedIndex], // hiển thị màn hình của mục được chọn
-      bottomNavigationBar: BottomNavigationBar( // cài đặt thanh điều hướng dưới cùng
-        currentIndex: _selectedIndex, // chỉ mục hiện tại bằng chỉ mục được chọn
-        onTap: _onItemTapped, // gọi hàm khi nhấn vào vào mục 
-        selectedItemColor: Colors.blueAccent, // màu mục được chọn
-        unselectedItemColor: Colors.black45,// màu mục không được chọn
-        type: BottomNavigationBarType.fixed, // kiểu cố định, BottomNavigatorBarType là một enum định nghĩa các kiểu hiển thị của thanh điều hướng dưới cùng trong Flutter. fixed nghĩa là tất cả các mục sẽ được hiển thị đồng thời và có kích thước bằng
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
-          BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'TKB'),
-          BottomNavigationBarItem(icon: Icon(Icons.edit_calendar), label: 'Lịch thi'),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Thông báo'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Cài đặt'),
+      backgroundColor: Colors.white,
+      bottomNavigationBar: const BottomNavBar(currentIndex: 0),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF1DA1F2),
+        centerTitle: true,
+        automaticallyImplyLeading: false, // ✨ tắt nút quay lại
+        title: const Text('Trang chủ', style: TextStyle(color: Colors.white)),
+      ),
+
+      body: ListView(
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+            child: Text(
+              'Truy cập nhanh',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0056A6),
+              ),
+            ),
+          ),
+          const QuickAccessSection(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'Tin tức trong khoa',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0056A6),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Danh sách tin tức
+          ...newsList.map(
+            (news) => _NewsCard(
+              title: news['title']!,
+              imageUrl: news['image']!,
+              content: news['content']!,
+              onTap: () => _openNews(context, news),
+            ),
+          ),
         ],
       ),
     );
   }
 }
-class HomeContent extends StatelessWidget {
-  final String className;
-  final Student student;
-  
-  const HomeContent({super.key, required this.className, required this.student});
+
+/// Widget hiển thị từng tin
+class _NewsCard extends StatelessWidget {
+  final String title;
+  final String imageUrl;
+  final String content;
+  final VoidCallback onTap;
+
+  const _NewsCard({
+    required this.title,
+    required this.imageUrl,
+    required this.content,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView( // cho phép cuộn khi nội dung vượt quá
-      child: Column( // widget dạng cột
-        children: [
-          const SizedBox(height: 20), // khoảng cách trên cùng
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16), // khoảng cách 2 bên, đối xứng theo chiều ngang
-            child: Row( // widget dạng hàng 
-              children: [
-                Image.network( // logo HUTECH
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-tELDvl_eNyJhTKgJR8nS2zRZwIURWIy_Sw&s',
-  height: 45,
-),
-
-                const SizedBox(width: 10), // khoảng cách giữa logo và chữ
-                const Expanded(
-                  child: Text(
-                    'Tri thức - Đạo đức - Sáng tạo',
-                    style: TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Divider(thickness: 1), // đường kẻ ngang, độ dày 1
-
-          // 🔸 Tiêu đề Truy cập nhanh
-          const Padding(
-            padding: EdgeInsets.only(left: 16, top: 8, bottom: 4),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Truy cập nhanh',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-
-          // 🔹 Các ô truy cập nhanh
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: GridView.count(
-              shrinkWrap: true,
-              crossAxisCount: 3,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                _buildQuickItem(
-                  context,
-                  icon: Icons.people_alt,
-                  title: 'Thời khóa biểu',
-                  color: Colors.greenAccent.shade100,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                        MaterialPageRoute(builder: (_) => StudyInfoScreen(className: className)),
-                    );
-                  },
-                ),
-                _buildQuickItem(
-                  context,
-                  icon: Icons.edit_calendar,
-                  title: 'Lịch thi',
-                  color: Colors.purpleAccent.shade100,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ExamScheduleScreen()),
-                    );
-                  },
-                ),
-                _buildQuickItem(
-                  context,
-                  icon: Icons.score,
-                  title: 'Xem điểm',
-                  color: Colors.orangeAccent.shade100,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                        MaterialPageRoute(builder: (_) => ScoreScreen(student: student)),
-                    );
-                  },
-                ),
-
-                _buildQuickItem(
-                  context,
-                  icon: Icons.fact_check,
-                  title: 'Điểm danh',
-                  color: Colors.orangeAccent.shade100,
-                  onTap: () {},
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 20),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Tin HUTECH',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-  'https://urbanvietnam.vn/images/HUTECH.jpg',
-  fit: BoxFit.cover,
-),
-
-            ),
-          ),
-          const SizedBox(height: 15),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickItem(BuildContext context,
-      {required IconData icon,
-      required String title,
-      required Color color,
-      required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.black12),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.all(10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              backgroundColor: color,
-              radius: 25,
-              child: Icon(icon, color: Colors.black87, size: 28),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
             const SizedBox(height: 8),
-            Text(title, style: const TextStyle(fontSize: 14)),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                imageUrl,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              content,
+              style: const TextStyle(fontSize: 15, color: Colors.black87),
+            ),
+            const SizedBox(height: 6),
+            const Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                'Xem chi tiết →',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF0056A6),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const Divider(),
           ],
         ),
       ),

@@ -11,14 +11,26 @@ class ScheduleService{
     required DateTime from,
     required DateTime to,
   }) async{
+    final trimmed = className.trim();
+    if (trimmed.isEmpty) {
+      throw Exception('Missing className when requesting schedules');
+    }
+
+    final encodedClass = Uri.encodeComponent(trimmed);
+    final fromStr = from.toIso8601String().substring(0,10);
+    final toStr = to.toIso8601String().substring(0,10);
     final url = Uri.parse(
-      '${ApiService.baseUrl}$_endpoint/class/$className?from=${from.toIso8601String().substring(0,10)}&to=${to.toIso8601String().substring(0,10)}'
-    // toIso8601String(): chuyển DateTime thành chuỗi định dạng ISO 8601, ví dụ "2023-10-05T14:48:00.000Z", sử dụng substring(0,10) để lấy phần ngày "2023-10-05"
+      '${ApiService.baseUrl}$_endpoint/class/$encodedClass?from=$fromStr&to=$toStr'
     );
 
     final res = await http.get(url, headers: ApiService.headers);
     if(res.statusCode >= 200 && res.statusCode < 300){
+      // Debug: log received data size to help diagnose empty results
       final List data = json.decode(res.body);
+      try {
+        // ignore: avoid_print
+        print('[ScheduleService] fetched ${data.length} items for class=$trimmed from=$fromStr to=$toStr');
+      } catch (_) {}
       return data.map((e)=>Schedule.fromJson(e)).toList();
 
     }

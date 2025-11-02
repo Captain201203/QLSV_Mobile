@@ -28,8 +28,9 @@ class Schedule {
     subjectName: json['subjectName'] ?? '',
     lecturer: json['lecturer'],
     room: json['room'],
-    startAt: DateTime.parse(json['startAt']),
-    endAt: DateTime.parse(json['endAt']),
+    // Parse server ISO datetimes and convert to local time for display
+    startAt: DateTime.parse(json['startAt']).toLocal(),
+    endAt: DateTime.parse(json['endAt']).toLocal(),
     note: json['note'],
   );
 
@@ -38,8 +39,9 @@ class Schedule {
     'subjectId': subjectId,
     'lecturer': lecturer,
     'room': room,
-    'startAt': startAt.toIso8601String(),
-    'endAt': endAt.toIso8601String(),
+    // Send UTC ISO strings so backend/Mongo stores UTC consistently
+    'startAt': startAt.toUtc().toIso8601String(),
+    'endAt': endAt.toUtc().toIso8601String(),
     'note': note,
   };
 }
