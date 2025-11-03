@@ -9,8 +9,8 @@ class OTPVerificationScreen extends StatefulWidget {
 
   const OTPVerificationScreen({
     super.key,
-    required this.email,
-    required this.sessionId,
+    required this.email, // email để hiển thị thông báo đã gửi mã đến đâu
+    required this.sessionId, // sessionId để xác thực OTP, sessionId để truyền vào hàm verifyOTP
   });
 
   @override
@@ -19,18 +19,18 @@ class OTPVerificationScreen extends StatefulWidget {
 
 class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   final _formKey = GlobalKey<FormState>();
-  final List<TextEditingController> _otpControllers = List.generate(
+  final List<TextEditingController> _otpControllers = List.generate( // tạo 6 controller cho 6 ô nhập mã OTP
     6,
     (index) => TextEditingController(),
   );
-  final List<FocusNode> _focusNodes = List.generate(
+  final List<FocusNode> _focusNodes = List.generate( // tạo 6 focus node để quản lý việc chuyển focus giữa các ô nhập mã OTP
     6,
     (index) => FocusNode(),
   );
   bool _isLoading = false;
 
   @override
-  void dispose() {
+  void dispose() { // giải phóng bộ nhớ cho các controller và focus node khi widget bị hủy
     for (var controller in _otpControllers) {
       controller.dispose();
     }
@@ -40,31 +40,31 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     super.dispose();
   }
 
-  void _onOtpChanged(String value, int index) {
-    if (value.isNotEmpty) {
-      // Move to next field
-      if (index < 5) {
+  void _onOtpChanged(String value, int index) { // xử lý khi người dùng nhập mã OTP
+    if (value.isNotEmpty) { // nếu có giá trị nhập vào thì chuyển focus đến ô tiếp theo
+      
+      if (index < 5) { // nếu chưa phải ô cuối cùng thì chuyển focus
         _focusNodes[index + 1].requestFocus();
       }
     }
   }
 
-  String _getFullOtp() {
-    return _otpControllers.map((c) => c.text).join();
+  String _getFullOtp() { // lấy toàn bộ mã OTP từ các controller
+    return _otpControllers.map((c) => c.text).join();// nối các chuỗi văn bản từ từng controller lại với nhau
   }
 
-  Future<void> _verifyOTP() async {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _verifyOTP() async { // hàm xác thực OTP
+    if (!_formKey.currentState!.validate()) return; // nếu form không hợp lệ thì dừng lại
 
     setState(() => _isLoading = true);
 
     try {
-      await AuthService.verifyOTP(widget.sessionId, _getFullOtp());
+      await AuthService.verifyOTP(widget.sessionId, _getFullOtp()); // gọi hàm verifyOTP từ AuthService với sessionId và mã OTP lấy từ các controller
       
-      if (!mounted) return;
+      if (!mounted) return; // nếu mounted là false, tức là widget không còn gắn vào cây widget nữa, thì dừng lại
       
       // Navigate to password reset screen
-      Navigator.pushReplacement(
+      Navigator.pushReplacement( // chuyển sang trang đổi mật khẩu
         context,
         MaterialPageRoute(
           builder: (context) => ResetPasswordScreen(

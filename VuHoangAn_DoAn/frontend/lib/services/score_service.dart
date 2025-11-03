@@ -4,11 +4,15 @@ import 'api_service.dart';
 class ScoreService{
   static const String _endpoint = "/scores";
 
+
+// Tạo điểm mới
   static Future<Score> createScore(Map<String, dynamic> scoreData) async{
     final data = await ApiService.post(_endpoint, scoreData);
     return Score.fromJson(data);
   }
 
+
+// Lấy tất cả điểm với các tham số tùy chọn để lọc
   static Future<List<Score>> getAllScores( {
     String? studentId,
     String? subjectId,

@@ -1,10 +1,10 @@
 // Tạo file: frontend/lib/screens/student/course_detail_screen.dart
 import 'package:flutter/material.dart';
-import '../../models/course.dart';
-import '../../models/lesson.dart';
-import '../../services/course_service.dart';
-import '../../services/lesson_service.dart';
-import '../../screens/student/lesson_detail_screen.dart';
+import '../frontend/lib/models/course.dart';
+import '../frontend/lib/models/lesson.dart';
+import '../frontend/lib/services/course_service.dart';
+import '../frontend/lib/services/lesson_service.dart';
+import '../frontend/lib/screens/student/lesson_detail_screen.dart';
 
 class CourseDetailScreen extends StatefulWidget {
   final String courseId;

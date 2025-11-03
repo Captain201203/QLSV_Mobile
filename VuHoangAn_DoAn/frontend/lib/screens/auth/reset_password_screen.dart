@@ -16,8 +16,8 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _passwordController = TextEditingController(); // tạo controller cho mật khẩu mới nhập vào
+  final _confirmPasswordController = TextEditingController(); // tạo controller cho xác nhận mật khẩu mới nhập vào
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -35,15 +35,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await AuthService.resetPassword(
-        widget.sessionId,
-        _passwordController.text.trim(),
+      await AuthService.resetPassword( // gọi hàm resetPassword từ AuthService với sessionId và mật khẩu mới
+        widget.sessionId, // lấy sessionId từ widget
+        _passwordController.text.trim(), // lấy mật khẩu mới từ controller
       );
       
-      if (!mounted) return;
+      if (!mounted) return; // nếu widget không còn gắn vào cây widget thì dừng lại
 
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
+      
+      ScaffoldMessenger.of(context).showSnackBar( // nếu không lỗi thì hiển thị thông báo thành công
         const SnackBar(
           content: Text('Đổi mật khẩu thành công!'),
           backgroundColor: Colors.green,

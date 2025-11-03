@@ -7,18 +7,18 @@ class AuthService {
 
   // Existing methods ...
 
-  static Future<Map<String, dynamic>> requestPasswordReset(String email) async {
+  static Future<Map<String, dynamic>> requestPasswordReset(String email) async { // tạo hàm requestPasswordReset nhận email
     try {
-      final response = await ApiService.post("$_endpoint/forgot-password", {"email": email});
+      final response = await ApiService.post("$_endpoint/forgot-password", {"email": email}); // gọi API POST với email
       return response;
     } catch (e) {
       throw _handleError(e);
     }
   }
 
-  static Future<void> verifyOTP(String sessionId, String otp) async {
+  static Future<void> verifyOTP(String sessionId, String otp) async { // tạo hàm verifyOTP nhận sessionId và otp
     try {
-      await ApiService.post("$_endpoint/verify-otp", {
+      await ApiService.post("$_endpoint/verify-otp", { // gọi API POST với sessionId và otp
         "sessionId": sessionId,
         "otp": otp,
       });
@@ -29,7 +29,7 @@ class AuthService {
 
   static Future<void> resetPassword(String sessionId, String newPassword) async {
     try {
-      await ApiService.post("$_endpoint/reset-password", {
+      await ApiService.post("$_endpoint/reset-password", { // gọi API POST với sessionId và mật khẩu mới
         "sessionId": sessionId,
         "newPassword": newPassword,
       });
@@ -39,7 +39,7 @@ class AuthService {
   }
 
   // Helper to handle error responses
-  static String _handleError(dynamic error) {
+  static String _handleError(dynamic error) { // hàm xử lý lỗi
     if (error is http.Response) {
       try {
         final Map<String, dynamic> body = json.decode(error.body);

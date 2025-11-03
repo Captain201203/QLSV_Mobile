@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'exam_detail_screen.dart'; // 🔹 Import file chi tiết
+import 'exam_detail_screen.dart';
+import '../../widgets/bottom_nav.dart';
 
 class ExamScheduleScreen extends StatelessWidget {
   const ExamScheduleScreen({super.key});
@@ -46,6 +47,7 @@ class ExamScheduleScreen extends StatelessWidget {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 2),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: exams.length,

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/student/reset_password_screen.dart';
 import 'package:frontend/screens/student/score_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../widgets/bottom_nav.dart';
@@ -140,8 +141,9 @@ class _OtherScreenState extends State<OtherScreen> {
             icon: Icons.lock_outline,
             title: 'Thay đổi mật khẩu',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Tính năng đang được phát triển')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ResetPasswordScreen()),
               );
             },
           ),

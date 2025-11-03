@@ -166,14 +166,21 @@ class _ScoreScreenState extends State<ScoreScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Học kỳ $_selectedSemester năm học $_selectedYear',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+          // Make the left label flexible so it can wrap/ellipsis on small screens
+          Expanded(
+            child: Text(
+              'Học kỳ $_selectedSemester năm học $_selectedYear',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
+          const SizedBox(width: 8),
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButton<String>(
                 value: _selectedSemester,

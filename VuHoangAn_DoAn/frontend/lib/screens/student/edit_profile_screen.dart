@@ -3,17 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
+import '../../models/student.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  final Student? student;
+  const EditProfileScreen({super.key, this.student});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
-  final TextEditingController emailController =
-      TextEditingController(text: "nguyenphuonglinh141204@gmail.com");
+class _EditProfileScreenState extends State<EditProfileScreen> { // tạo trạng thái ban đầu cho EditProfileScreen
+  String _studentName = 'Người dùng';
+  String _studentId = '';
+  String _email = '';
+ 
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   File? _avatarImage;
@@ -25,17 +30,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   // 🔹 Load dữ liệu đã lưu
-  Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
+  Future<void> _loadUserData() async { // hàm tải dữ liệu người dùng đã lưu, với email, studentName, studentId từ studenlModel
+    final prefs = await SharedPreferences.getInstance(); // SharedPreferences dùng để lưu trữ dữ liệu cục bộ
     final avatarPath = prefs.getString('avatar_path');
     final savedEmail = prefs.getString('email');
+    final savedName = prefs.getString('studentName');
+    final savedId = prefs.getString('studentId');
     final savedPassword = prefs.getString('password');
+
+    if (!mounted) return;
 
     setState(() {
       if (avatarPath != null && File(avatarPath).existsSync()) {
         _avatarImage = File(avatarPath);
       }
-      if (savedEmail != null) emailController.text = savedEmail;
+      _email = savedEmail?.isNotEmpty == true ? savedEmail! : widget.student?.email ?? _email;
+      _studentName = savedName?.isNotEmpty == true ? savedName! : widget.student?.studentName ?? _studentName;
+      _studentId = savedId?.isNotEmpty == true ? savedId! : widget.student?.studentId ?? _studentId;
+      
+      emailController.text = _email;
       if (savedPassword != null) passwordController.text = savedPassword;
     });
   }
@@ -62,16 +75,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // 🔹 Lưu thông tin vào SharedPreferences
   Future<void> _saveChanges() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('email', emailController.text);
-    await prefs.setString('password', passwordController.text);
-    if (_avatarImage != null) {
-      await prefs.setString('avatar_path', _avatarImage!.path);
-    }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Lưu thông tin cơ bản
+      await prefs.setString('email', emailController.text);
+      await prefs.setString('password', passwordController.text);
+      await prefs.setString('studentName', _studentName);
+      await prefs.setString('studentId', _studentId);
+      
+      // Lưu avatar nếu có
+      if (_avatarImage != null) {
+        await prefs.setString('avatar_path', _avatarImage!.path);
+      }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Cập nhật thông tin thành công!")),
-    );
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Cập nhật thông tin thành công!")),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Có lỗi xảy ra khi lưu thông tin!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -128,16 +160,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 16),
 
             // 🟢 Họ tên (không chỉnh sửa)
-            const Text(
-              "Nguyễn Phương Linh",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            Text(
+              widget.student?.studentName ?? _studentName,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
 
             // 🟢 MSSV (không chỉnh sửa)
-            const Text(
-              "MSSV: 2280601727",
-              style: TextStyle(fontSize: 15, color: Colors.grey),
+            Text(
+              "MSSV: ${widget.student?.studentId ?? _studentId}",
+              style: const TextStyle(fontSize: 15, color: Colors.grey),
             ),
             const SizedBox(height: 30),
 

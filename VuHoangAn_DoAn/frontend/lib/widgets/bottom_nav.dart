@@ -11,16 +11,19 @@ class BottomNavBar extends StatelessWidget {
   const BottomNavBar({super.key, required this.currentIndex});
 
   @override
-  Widget build(BuildContext context) {
-    final items = [
-      {'icon': Icons.home, 'label': 'Trang chủ'},
-      {'icon': Icons.calendar_month, 'label': 'TKB'},
-      {'icon': Icons.assignment, 'label': 'Lịch thi'},
-      {'icon': Icons.notifications_none, 'label': 'Thông báo'},
-      {'icon': Icons.grid_view, 'label': 'Khác'},
-    ];
+Widget build(BuildContext context) { // Biểu tượng và nhãn cho từng mục
+  final items = [
+    {'icon': Icons.home, 'label': 'Trang chủ'},
+    {'icon': Icons.calendar_month, 'label': 'TKB'},
+    {'icon': Icons.assignment, 'label': 'Lịch thi'},
+    {'icon': Icons.notifications_none, 'label': 'Thông báo'},
+    {'icon': Icons.grid_view, 'label': 'Khác'},
+  ];
 
-    return Container(
+  return ClipRect(
+  child: SafeArea( // tránh bị che khuất bởi các phần cứng như notch, bo tròn
+    top: false,
+    child: Container(
       padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 10),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -34,16 +37,17 @@ class BottomNavBar extends StatelessWidget {
           final bool isSelected = index == currentIndex;
 
           return GestureDetector(
+            behavior: HitTestBehavior.opaque, // 👈 đảm bảo vùng bấm đầy đủ
             onTap: () async {
               if (index == currentIndex) return;
 
-              Widget destination;
-              switch (index) {
+              Widget destination; // điều hướng, tạo switch case để chọn màn hình
+              switch (index) { 
                 case 0:
                   destination = const HomeScreen();
                   break;
                 case 1:
-                  // TKB -> StudyInfo: try to read saved className from prefs
+                  
                   final prefs = await SharedPreferences.getInstance();
                   final cls = prefs.getString('className') ?? '';
                   destination = StudyInfoScreen(className: cls);
@@ -61,12 +65,16 @@ class BottomNavBar extends StatelessWidget {
                   destination = const HomeScreen();
               }
 
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => destination),
-              );
+              if (context.mounted) {
+               
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => destination),
+                  (route) => false, 
+                );
+              }
             },
-            child: AnimatedContainer(
+            child: AnimatedContainer( // hiệu ứng chuyển đổi khi chọn mục
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
@@ -100,6 +108,9 @@ class BottomNavBar extends StatelessWidget {
           );
         }).toList(),
       ),
-    );
-  }
+    ),
+  ),
+);
+}
+  
 }

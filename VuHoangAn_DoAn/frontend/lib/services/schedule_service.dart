@@ -6,29 +6,31 @@ import '../models/schedule.dart';
 class ScheduleService{
   static const String _endpoint = "/schedules";
 
-  static Future<List<Schedule>> getByClass({
+  static Future<List<Schedule>> getByClass({  // thêm tham số bắt buộc className, ngày bắt đầu và kết thúc
     required String className,
     required DateTime from,
     required DateTime to,
   }) async{
-    final trimmed = className.trim();
+    final trimmed = className.trim(); // loại bỏ khoảng trắng thừa
     if (trimmed.isEmpty) {
-      throw Exception('Missing className when requesting schedules');
+      throw Exception('Missing className when requesting schedules'); // ném ngoại lệ nếu className rỗng
     }
 
-    final encodedClass = Uri.encodeComponent(trimmed);
-    final fromStr = from.toIso8601String().substring(0,10);
-    final toStr = to.toIso8601String().substring(0,10);
+    final encodedClass = Uri.encodeComponent(trimmed); // mã hóa tên lớp để sử dụng trong URL
+    final fromStr = from.toIso8601String().substring(0,10); // lấy chuỗi ngày theo định dạng ISO 8601, chỉ lấy phần ngày
+    final toStr = to.toIso8601String().substring(0,10); // lấy chuỗi ngày theo định dạng ISO 8601, chỉ lấy phần ngày
     final url = Uri.parse(
-      '${ApiService.baseUrl}$_endpoint/class/$encodedClass?from=$fromStr&to=$toStr'
+      '${ApiService.baseUrl}$_endpoint/class/$encodedClass?from=$fromStr&to=$toStr' // tạo URL gọi api với các tham số
     );
 
+
+// gọi API để lấy thời khóa biểu
     final res = await http.get(url, headers: ApiService.headers);
     if(res.statusCode >= 200 && res.statusCode < 300){
-      // Debug: log received data size to help diagnose empty results
+      
       final List data = json.decode(res.body);
       try {
-        // ignore: avoid_print
+        
         print('[ScheduleService] fetched ${data.length} items for class=$trimmed from=$fromStr to=$toStr');
       } catch (_) {}
       return data.map((e)=>Schedule.fromJson(e)).toList();

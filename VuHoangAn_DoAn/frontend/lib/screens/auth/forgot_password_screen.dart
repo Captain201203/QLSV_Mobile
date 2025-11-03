@@ -12,7 +12,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _emailController = TextEditingController(); // tạo controller cho email nhập vào
   bool _isLoading = false;
 
   Future<void> _requestPasswordReset() async {
@@ -21,24 +21,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final response = await AuthService.requestPasswordReset(_emailController.text.trim());
+      final response = await AuthService.requestPasswordReset(_emailController.text.trim()); // gọi hàm requestPasswordReset từ AuthService với email lấy từ controller 
       
-      if (!mounted) return;
+      if (!mounted) return; // mounted là một thuộc tính của State trong Flutter, nó cho biết liệu State hiện tại có được gắn vào cây widget hay không. Nếu không mounted, tức là widget đã bị hủy và không nên thực hiện các thao tác liên quan đến giao diện người dùng.
       
       // Navigate to OTP screen with session ID
-      Navigator.push(
+      Navigator.push( // chuyển sang màn hình xác thực otp
         context,
         MaterialPageRoute(
-          builder: (context) => OTPVerificationScreen(
+          builder: (context) => OTPVerificationScreen( // tạo route đến OTPVerificationScreen
             email: _emailController.text.trim(),
-            sessionId: response['sessionId'],
+            sessionId: response['sessionId'], 
           ),
         ),
       );
 
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return; // nếu widget không còn gắn vào cây widget thì dừng lại
+      ScaffoldMessenger.of(context).showSnackBar( // hiển thị thông báo lỗi
         SnackBar(
           content: Text(e.toString()),
           backgroundColor: Colors.red,
@@ -100,7 +100,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: _isLoading ? null : _requestPasswordReset,
+                onPressed: _isLoading ? null : _requestPasswordReset, // gọi hàm requestPasswordReset khi nhấn nút
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPrimary,
                   foregroundColor: Colors.white,

@@ -1,8 +1,8 @@
 // Tạo file: frontend/lib/screens/student/course_list_screen.dart
 import 'package:flutter/material.dart';
-import '../../models/course.dart';
-import '../../services/course_service.dart';
-import '../../screens/student/couse_detail_screen.dart';
+import '../frontend/lib/models/course.dart';
+import '../frontend/lib/services/course_service.dart';
+import 'couse_detail_screen.dart';
 
 class CourseListScreen extends StatefulWidget {
   const CourseListScreen({Key? key}) : super(key: key);

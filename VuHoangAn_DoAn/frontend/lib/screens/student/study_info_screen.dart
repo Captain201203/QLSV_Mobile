@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/schedule.dart';
 import '../../services/schedule_service.dart';
+import '../../widgets/bottom_nav.dart';
 
 class StudyInfoScreen extends StatefulWidget {
   final String? className;
@@ -176,6 +177,7 @@ class _StudyInfoScreenState extends State<StudyInfoScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 1),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,

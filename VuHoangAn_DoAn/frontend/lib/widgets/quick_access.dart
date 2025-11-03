@@ -3,12 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/student.dart';
 import '../screens/student/score_screen.dart';
 import '../screens/student/study_info_screen.dart';
+import '../screens/student/attendance_screen.dart';
+import '../screens/student/exam_schedule_screen.dart';
 
 class QuickAccessSection extends StatelessWidget {
   const QuickAccessSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { // Biểu tượng và nhãn cho từng mục
     final items = [
       {
         'label': 'Lịch học',
@@ -20,13 +22,24 @@ class QuickAccessSection extends StatelessWidget {
         'imageUrl': 'https://cdn-icons-png.flaticon.com/512/2994/2994170.png',
         'type': 'score',
       },
+      {
+        'label': 'Điểm danh',
+        'imageUrl': 'https://cdn-icons-png.flaticon.com/128/10219/10219997.png',
+        'type': 'attendance',
+      },
+      {
+        'label': 'Lịch thi',
+        'imageUrl': 'https://cdn-icons-png.freepik.com/256/7992/7992312.png',
+        'type': 'exam',
+      },
     ];
 
-    return Padding(
+    return Padding( // tạo padding cho toàn bộ widget
       padding: const EdgeInsets.symmetric(horizontal: 9.0, vertical: 9),
-      child: Container(
+      child: Container( // hộp chứa toàn bộ mục truy cập nhanh
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+        
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -42,15 +55,18 @@ class QuickAccessSection extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: items.map((item) {
+        // Allow horizontal scrolling when items don't fit the width
+        child: SingleChildScrollView( // cho phép cuộn ngang khi các mục không vừa với chiều rộng
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: items.map((item) {
             final String label = item['label'] as String;
             final String? imageUrl = item['imageUrl'] as String?;
             final String type = item['type'] as String;
 
-            return GestureDetector(
+            return GestureDetector( // xử lý sự kiện nhấn vào mục
               onTap: () async {
                 if (type == 'score') {
                   // 🔹 Lấy dữ liệu sinh viên từ SharedPreferences
@@ -77,6 +93,16 @@ class QuickAccessSection extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const StudyInfoScreen()),
+                  );
+                } else if (type == 'attendance') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AttendanceScreen()),
+                  );
+                } else if (type == 'exam') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ExamScheduleScreen()),
                   );
                 }
               },
@@ -117,7 +143,8 @@ class QuickAccessSection extends StatelessWidget {
                 ],
               ),
             );
-          }).toList(),
+            }).toList(),
+          ),
         ),
       ),
     );
