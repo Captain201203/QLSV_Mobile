@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../models/account.dart';
 import '../../../services/account_service.dart';
-// import 'account_form.dart'; // ❌ Tạm thời comment vì chưa có file này
+// import 'account_form.dart'; // 
 
 // ----------------Widget chính hiển thị danh sách tài khoản----------------
 class AccountListPage extends StatefulWidget {
@@ -22,10 +22,10 @@ class _AccountListPageState extends State<AccountListPage> {
     _loadAccounts();
   }
 
-  Future<void> _loadAccounts() async {
+  Future<void> _loadAccounts() async { // Hàm tải danh sách tài khoản từ API
     try {
-      final data = await AccountService.generateFromStudents();
-      setState((){
+      final data = await AccountService.generateFromStudents(); // Gọi API lấy danh sách tài khoản sinh viên
+      setState((){ // Cập nhật trạng thái với dữ liệu mới
         accounts = data;
         loading =false;
       });
@@ -41,7 +41,7 @@ class _AccountListPageState extends State<AccountListPage> {
   Future<void> _deleteAccount(String id) async {
     try {
       await AccountService.deleteAccount(id);
-      setState(() => accounts.removeWhere((e) => e.id == id));
+      setState(() => accounts.removeWhere((e) => e.id == id)); 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Xóa tài khoản thành công')),
       );

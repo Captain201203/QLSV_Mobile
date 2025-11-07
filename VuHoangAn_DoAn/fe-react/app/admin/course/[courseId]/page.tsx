@@ -7,13 +7,15 @@ import { Lesson } from "@/app/types/lesson";
 import LessonCard from "@/app/components/lesson/lessonCard";
 import LessonForm from "@/app/components/lesson/lessonForm";
 import { Plus, ArrowLeft, X } from "lucide-react";
+// Removed inline quiz form usage; navigate to quiz management page instead
 
 export default function LessonPage() {
   const { courseId } = useParams();
   const router = useRouter();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [showLessonForm, setShowLessonForm] = useState(false);
+  // Quiz management is handled on a dedicated route per lesson
 
   const fetchLessons = async () => {
     try {
@@ -29,20 +31,20 @@ export default function LessonPage() {
     fetchLessons();
   }, [courseId]);
 
-  const handleCreate = async (data: Lesson) => {
+  const handleCreateLesson = async (data: Lesson) => {
     try {
       await lessonService.create(data);
-      setShowForm(false);
+      setShowLessonForm(false);
       fetchLessons();
     } catch {
       alert("Thêm bài học thất bại");
     }
   };
 
-  const handleUpdate = async (data: Lesson) => {
+  const handleUpdateLesson = async (data: Lesson) => {
     try {
       await lessonService.update(data.lessonId, data);
-      setShowForm(false);
+      setShowLessonForm(false);
       setSelectedLesson(null);
       fetchLessons();
     } catch {
@@ -50,7 +52,7 @@ export default function LessonPage() {
     }
   };
 
-  const handleDelete = async (lessonId: string) => {
+  const handleDeleteLesson = async (lessonId: string) => {
     if (!confirm("Bạn có chắc muốn xóa bài học này?")) return;
     try {
       await lessonService.delete(lessonId);
@@ -60,10 +62,16 @@ export default function LessonPage() {
     }
   };
 
-  const handleEdit = (lesson: Lesson) => {
+  const handleEditLesson = (lesson: Lesson) => {
     setSelectedLesson(lesson);
-    setShowForm(true);
+    setShowLessonForm(true);
   };
+
+  const handleShowQuizForm = (lessonId: string) => {
+    router.push(`/admin/course/${courseId}/lesson/${lessonId}/quiz`);
+  };
+
+  // no inline quiz submit here; handled in dedicated quiz pages
 
   return (
     <div className="p-6">
@@ -80,7 +88,7 @@ export default function LessonPage() {
         <button
           onClick={() => {
             setSelectedLesson(null);
-            setShowForm(true);
+            setShowLessonForm(true);
           }}
           className="cursor-pointer flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
         >
@@ -88,11 +96,11 @@ export default function LessonPage() {
         </button>
       </div>
 
-      {showForm && (
+      {showLessonForm && (
         <div className="mb-6 bg-white shadow rounded-lg p-4 relative">
           <button
             onClick={() => {
-              setShowForm(false);
+              setShowLessonForm(false);
               setSelectedLesson(null);
             }}
             className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
@@ -102,11 +110,13 @@ export default function LessonPage() {
           <LessonForm
             lesson={selectedLesson}
             courseId={courseId as string}
-            onSubmit={selectedLesson ? handleUpdate : handleCreate}
-            onCancel={() => setShowForm(false)}
+            onSubmit={selectedLesson ? handleUpdateLesson : handleCreateLesson}
+            onCancel={() => setShowLessonForm(false)}
           />
         </div>
       )}
+
+      {/* Quiz CRUD is navigated to a separate page */}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {lessons.map((lesson) => (
@@ -114,8 +124,9 @@ export default function LessonPage() {
             key={lesson.lessonId}
             lesson={lesson}
             courseId={courseId as string}
-            onEdit={() => handleEdit(lesson)}
-            onDelete={() => { handleDelete(lesson.lessonId); }}
+            onEdit={() => handleEditLesson(lesson)}
+            onDelete={() => { handleDeleteLesson(lesson.lessonId); }}
+            onManageQuiz={() => handleShowQuizForm(lesson.lessonId)}
           />
         ))}
       </div>

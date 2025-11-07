@@ -48,9 +48,9 @@ Widget build(BuildContext context) { // Biểu tượng và nhãn cho từng m�
                   break;
                 case 1:
                   
-                  final prefs = await SharedPreferences.getInstance();
-                  final cls = prefs.getString('className') ?? '';
-                  destination = StudyInfoScreen(className: cls);
+                  final prefs = await SharedPreferences.getInstance(); // shared preferences là công cụ lưu trữ dữ liệu trên thiết bị
+                  final cls = prefs.getString('className') ?? ''; // lấy className từ shared preferences
+                  destination = StudyInfoScreen(className: cls); // truyền className vào StudyInfoScreen
                   break;
                 case 2:
                   destination = const ExamScheduleScreen();

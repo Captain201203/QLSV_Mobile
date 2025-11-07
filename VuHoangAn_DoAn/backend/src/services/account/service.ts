@@ -40,7 +40,7 @@ export const createAccountForStudent = async () => {
                         role: 'sinh viên'
                     });
                     
-                    result.push({ // Thêm thông tin tài khoản mới vào kết quả
+                    result.push({ // Thêm thông tin tài khoản mới vào kết quả, .push là phương thức thêm phần tử mới vào cuối mảng của javascript
                         _id: newAccount._id,
                         name: newAccount.studentName,
                         username: newAccount.email,

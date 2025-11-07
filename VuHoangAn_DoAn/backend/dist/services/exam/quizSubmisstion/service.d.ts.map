@@ -1,0 +1,1 @@
+{"version":3,"file":"service.d.ts","sourceRoot":"","sources":["../../../../src/services/exam/quizSubmisstion/service.ts"],"names":[],"mappings":"AACA,OAA4B,EAAC,eAAe,EAAC,MAAM,8CAA8C,CAAC;AAGlG,eAAO,MAAM,qBAAqB;iBAEX;QAAC,MAAM,EAAE,MAAM,CAAC;QAAC,SAAS,EAAE,MAAM,CAAC;QAAC,OAAO,EAAE;YAAE,UAAU,EAAC,MAAM,CAAC;YAAC,cAAc,EAAE,MAAM,CAAA;SAAC,EAAE,CAAA;KAAC;;;4BAiCjF,MAAM;;;CAGvC,CAAA"}

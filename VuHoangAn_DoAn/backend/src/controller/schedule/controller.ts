@@ -2,6 +2,8 @@ import {Request, Response} from 'express'
 import{ScheduleService} from '../../services/schedule/service.js'
 
 export const ScheduleController = {
+
+    // lấy thời khóa biểu theo lớp
     async getByClass(req: Request, res: Response){
         try{
             const { className} = req.params; // lấy class name từ tham số url

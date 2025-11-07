@@ -9,7 +9,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key}); // Khởi tạo LoginScreen
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState(); // khởi tạo state cho widget
+  State<LoginScreen> createState() => _LoginScreenState(); // khởi tạo state cho widget, dấu 
   
 
   
@@ -49,8 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final student = await StudentService.loginStudent(email,password);
 
       if(student != null){
-        // Save className to SharedPreferences so other screens can access it when
-        // navigation doesn't include the value (e.g., via BottomNavBar).
+
         try {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('className', student.className);

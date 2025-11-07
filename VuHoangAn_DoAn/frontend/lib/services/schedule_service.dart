@@ -31,7 +31,7 @@ class ScheduleService{
       final List data = json.decode(res.body);
       try {
         
-        print('[ScheduleService] fetched ${data.length} items for class=$trimmed from=$fromStr to=$toStr');
+        print('[ScheduleService] fetched ${data.length} items for class=$trimmed from=$fromStr to=$toStr'); // in ra số lượng mục đã lấy được
       } catch (_) {}
       return data.map((e)=>Schedule.fromJson(e)).toList();
 
@@ -39,6 +39,8 @@ class ScheduleService{
     throw Exception('Không thể tải thời khóa biểu: ${res.statusCode}');
   }
 
+
+// tạo thời khóa biểu mới
   static Future<Schedule> create (Map<String, dynamic> payload)async{
     final url = Uri.parse('${ApiService.baseUrl}$_endpoint');
     final res = await http.post(
@@ -51,6 +53,8 @@ class ScheduleService{
       throw Exception('Không thể tạo thời khóa biểu: ${res.body}');
   }
 
+
+// cập nhật thời khóa biểu
   static Future <Schedule> update (String id, Map<String, dynamic>payload)async{
     final url = Uri.parse('${ApiService.baseUrl}$_endpoint/$id');
     final res = await http.put(
@@ -63,6 +67,8 @@ class ScheduleService{
     throw Exception('Không thể cập nhật thời khóa biểu: ${res.body}');
   }
 
+
+// xóa thời khóa biểu
   static Future<void> delete (String id)async{
     final url = Uri.parse('${ApiService.baseUrl}$_endpoint/$id');
     final res = await http.delete(url, headers: ApiService.headers);

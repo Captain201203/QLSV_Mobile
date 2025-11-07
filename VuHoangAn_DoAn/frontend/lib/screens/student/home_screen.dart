@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         children: [
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10), // EdgeInsets.symmetric là padding cho cả 2 bên, horizontal là padding cho bên trái và bên phải, vertical là padding cho bên trên và bên dưới
             child: Text(
               'Truy cập nhanh',
               style: TextStyle(
@@ -149,7 +149,7 @@ class _NewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return GestureDetector( // GestureDetector là widget xử lý sự kiện nhấn vào mục
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),

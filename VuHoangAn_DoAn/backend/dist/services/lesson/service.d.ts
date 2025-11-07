@@ -1,13 +1,14 @@
 import { ILesson } from '../../models/lesson/model.js';
+import mongoose from 'mongoose';
 export declare const LessonService: {
-    getAll(): Promise<(import("mongoose").Document<unknown, {}, ILesson> & ILesson & {
-        _id: import("mongoose").Types.ObjectId;
+    getAll(): Promise<(mongoose.Document<unknown, {}, ILesson> & ILesson & {
+        _id: mongoose.Types.ObjectId;
     })[]>;
-    getById(id: string): Promise<(import("mongoose").Document<unknown, {}, ILesson> & ILesson & {
-        _id: import("mongoose").Types.ObjectId;
+    getById(id: string): Promise<(mongoose.Document<unknown, {}, ILesson> & ILesson & {
+        _id: mongoose.Types.ObjectId;
     }) | null>;
-    getByCourse(courseId: string): Promise<(import("mongoose").Document<unknown, {}, ILesson> & ILesson & {
-        _id: import("mongoose").Types.ObjectId;
+    getByCourse(courseId: string): Promise<(mongoose.Document<unknown, {}, ILesson> & ILesson & {
+        _id: mongoose.Types.ObjectId;
     })[]>;
     create(data: {
         lessonId: string;
@@ -15,14 +16,14 @@ export declare const LessonService: {
         title: string;
         description: string;
         order: number;
-    }): Promise<import("mongoose").Document<unknown, {}, ILesson> & ILesson & {
-        _id: import("mongoose").Types.ObjectId;
+    }): Promise<mongoose.Document<unknown, {}, ILesson> & ILesson & {
+        _id: mongoose.Types.ObjectId;
     }>;
-    update(id: string, data: Partial<ILesson>): Promise<(import("mongoose").Document<unknown, {}, ILesson> & ILesson & {
-        _id: import("mongoose").Types.ObjectId;
+    update(id: string, data: Partial<ILesson>): Promise<(mongoose.Document<unknown, {}, ILesson> & ILesson & {
+        _id: mongoose.Types.ObjectId;
     }) | null>;
-    delete(id: string): Promise<(import("mongoose").Document<unknown, {}, ILesson> & ILesson & {
-        _id: import("mongoose").Types.ObjectId;
+    delete(id: string): Promise<(mongoose.Document<unknown, {}, ILesson> & ILesson & {
+        _id: mongoose.Types.ObjectId;
     }) | null>;
 };
 export default LessonService;

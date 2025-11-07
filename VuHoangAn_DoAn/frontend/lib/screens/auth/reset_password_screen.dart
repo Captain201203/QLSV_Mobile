@@ -50,7 +50,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
       );
 
-      // Pop back to login screen
+     
       Navigator.of(context).popUntil((route) => route.isFirst);
 
     } catch (e) {

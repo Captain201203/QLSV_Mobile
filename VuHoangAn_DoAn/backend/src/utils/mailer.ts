@@ -5,19 +5,19 @@ import path from 'path';
 // Load .env.local from project root
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
+const transporter = nodemailer.createTransport({ // cấu hình dịch vụ email
+  service: 'gmail', // sử dụng gmail
+  host: 'smtp.gmail.com', // máy chủ SMTP của Gmail
   port: 465,
   secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  debug: true // Enable debug logs
+  debug: true 
 });
 
-export const sendOTPEmail = async (to: string, otp: string) => {
+export const sendOTPEmail = async (to: string, otp: string) => { // hàm gửi email OTP
   try {
     await transporter.sendMail({
       from: `"QLSV Support" <${process.env.EMAIL_USER}>`,
@@ -43,12 +43,12 @@ export const sendOTPEmail = async (to: string, otp: string) => {
 };
 
 export const generateOTP = () => {
-  // Generate 6-digit OTP
-  return Math.floor(100000 + Math.random() * 900000).toString();
+
+  return Math.floor(100000 + Math.random() * 900000).toString(); // tạo mã OTP 6 chữ số
 };
 
-// Verify email configuration on startup
-transporter.verify(function(error, success) {
+
+transporter.verify(function(error, success) { // xác thực cấu hình email khi khởi động
   if (error) {
     console.error('Email configuration error:', error);
   } else {

@@ -22,8 +22,8 @@ class ScoreService{
     String query = '';
     List<String> params = [];
 
-    if(studentId != null) params.add('studentId=$studentId');
-    if(subjectId != null) params.add('subjectId=$subjectId');
+    if(studentId != null) params.add('studentId=$studentId'); // nếu có studentId thì thêm vào params
+    if(subjectId != null) params.add('subjectId=$subjectId'); 
     if(semester != null) params.add('semester=$semester');
     if(academicYear != null) params.add('academicYear=$academicYear');
 
@@ -33,6 +33,7 @@ class ScoreService{
     return (data as List).map((item) => Score.fromJson(item)).toList();
   }
 
+// Lấy điểm theo ID
   static Future<Score> getScoreById(String id) async {
     final data = await ApiService.get('$_endpoint/$id');
     return Score.fromJson(data);

@@ -4,15 +4,15 @@ import path from 'path';
 // Load .env.local from project root
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
+    service: 'gmail', // sử dụng gmail
+    host: 'smtp.gmail.com', // máy chủ SMTP của Gmail
     port: 465,
     secure: true,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
-    debug: true // Enable debug logs
+    debug: true
 });
 export const sendOTPEmail = async (to, otp) => {
     try {
@@ -40,10 +40,8 @@ export const sendOTPEmail = async (to, otp) => {
     }
 };
 export const generateOTP = () => {
-    // Generate 6-digit OTP
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return Math.floor(100000 + Math.random() * 900000).toString(); // tạo mã OTP 6 chữ số
 };
-// Verify email configuration on startup
 transporter.verify(function (error, success) {
     if (error) {
         console.error('Email configuration error:', error);

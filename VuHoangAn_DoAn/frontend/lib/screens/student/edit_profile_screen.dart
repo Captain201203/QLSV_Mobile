@@ -44,8 +44,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> { // tạo trạn
       if (avatarPath != null && File(avatarPath).existsSync()) {
         _avatarImage = File(avatarPath);
       }
-      _email = savedEmail?.isNotEmpty == true ? savedEmail! : widget.student?.email ?? _email;
-      _studentName = savedName?.isNotEmpty == true ? savedName! : widget.student?.studentName ?? _studentName;
+      _email = savedEmail?.isNotEmpty == true ? savedEmail! : widget.student?.email ?? _email; // ưu tiên lấy email từ SharedPreferences, nếu không có thì lấy từ studentModel, nếu vẫn không có thì dùng giá trị mặc định
+      _studentName = savedName?.isNotEmpty == true ? savedName! : widget.student?.studentName ?? _studentName; // ưu tiên lấy studentName từ SharedPreferences, nếu không có thì lấy từ studentModel, nếu vẫn không có thì dùng giá trị mặc định
       _studentId = savedId?.isNotEmpty == true ? savedId! : widget.student?.studentId ?? _studentId;
       
       emailController.text = _email;
@@ -159,14 +159,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> { // tạo trạn
             ),
             const SizedBox(height: 16),
 
-            // 🟢 Họ tên (không chỉnh sửa)
+            // Họ tên (không chỉnh sửa)
             Text(
               widget.student?.studentName ?? _studentName,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
 
-            // 🟢 MSSV (không chỉnh sửa)
+            // MSSV (không chỉnh sửa)
             Text(
               "MSSV: ${widget.student?.studentId ?? _studentId}",
               style: const TextStyle(fontSize: 15, color: Colors.grey),
@@ -186,7 +186,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> { // tạo trạn
             ),
             const SizedBox(height: 20),
 
-            // 🔹 Mật khẩu mới
+            // Mật khẩu mới
             TextField(
               controller: passwordController,
               obscureText: true,
@@ -200,7 +200,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> { // tạo trạn
             ),
             const SizedBox(height: 40),
 
-            // 🟢 Nút lưu thay đổi
+            // Nút lưu thay đổi
             SizedBox(
               width: double.infinity,
               height: 50,

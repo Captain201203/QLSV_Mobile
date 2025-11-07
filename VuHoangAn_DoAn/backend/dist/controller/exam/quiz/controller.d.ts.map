@@ -1,0 +1,1 @@
+{"version":3,"file":"controller.d.ts","sourceRoot":"","sources":["../../../../src/controller/exam/quiz/controller.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAI5C,eAAO,MAAM,cAAc;qBACA,OAAO,OAAO,QAAQ;gBAU3B,OAAO,OAAO,QAAQ;gBAStB,OAAO,OAAO,QAAQ;gBAStB,OAAO,OAAO,QAAQ;iBASpB,OAAO,OAAO,QAAQ;CAY7C,CAAA"}

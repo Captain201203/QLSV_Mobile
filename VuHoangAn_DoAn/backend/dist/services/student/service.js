@@ -2,31 +2,37 @@ import StudentModel from '../../models/student/model.js';
 import ScheduleModel from '../../models/schedule/model.js';
 import ClassModel from '../../models/class/model.js';
 import SubjectModel from '../../models/subject/model.js';
+// lấy tất cả sinh viên
 export const StudentService = {
     async getAll() {
         return StudentModel.find();
     },
+    // lấy sinh viên theo id
     async getById(id) {
         return StudentModel.findById(id);
     },
+    // tạo sinh viên mới
     async create(data) {
-        const existingClass = await ClassModel.findOne({ className: data.className });
+        const existingClass = await ClassModel.findOne({ className: data.className }); // kiểm tra lớp có tồn tại chưachưa
         if (!existingClass) {
             throw new Error(`Class with name ${data.className} does not exist.`);
-        }
-        const student = new StudentModel(data);
-        const savedStudent = await student.save();
-        existingClass.students.push(savedStudent._id);
-        await existingClass.save();
-        return savedStudent;
+        } // nếu lớp không tồn tại thì thông báo lỗi
+        const student = new StudentModel(data); // nếu lớp tồn tại thì tạo sinh viên mới
+        const savedStudent = await student.save(); // lưu sinh viên vào database
+        existingClass.students.push(savedStudent._id); // thêm sinh viên vào lớp
+        await existingClass.save(); // thêm sinh viên vào lớp
+        return savedStudent; // trả về sinh viên đã tạo
     },
+    // cập nhật sinh viên
     async update(id, data) {
         return StudentModel.findByIdAndUpdate(id, data, { new: true });
     },
+    // xóa sinh viên
     async delete(id) {
         return StudentModel.findByIdAndDelete(id);
     },
     //-------------------------------------------
+    // lấy danh sách môn học của sinh viên
     async getSubjectByStudent(studentId) {
         const student = await StudentModel.findOne({ studentId: studentId });
         if (!student) {

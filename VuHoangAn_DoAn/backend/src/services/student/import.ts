@@ -23,32 +23,32 @@ type ValidStudent = {
 
 type RowError = { row: number; reason: string };
 
-function excelDateToJSDate(v: any): Date | null {
-  // Hỗ trợ cả serial và chuỗi ISO/locale
+function excelDateToJSDate(v: any): Date | null { // chuyển đổi ngày sinh từ excel sang javascript
+ 
   if (typeof v === 'number') {
-    // Excel serial date: tính từ 1899-12-30
-    const epoch = new Date(Date.UTC(1899, 11, 30));
-    const ms = Math.round(v * 24 * 60 * 60 * 1000);
-    return new Date(epoch.getTime() + ms);
+    
+    const epoch = new Date(Date.UTC(1899, 11, 30)); // tạo một ngày tháng năm 1899-12-30
+    const ms = Math.round(v * 24 * 60 * 60 * 1000); // tính toán số mili giây từ ngày sinh
+    return new Date(epoch.getTime() + ms); // tạo một ngày tháng năm từ số mili giây
   }
   if (typeof v === 'string') {
-    const d = new Date(v);
+    const d = new Date(v); // tạo một ngày tháng năm từ chuỗi
     return isNaN(d.getTime()) ? null : d;
   }
   return null;
 }
 
-async function parseExcel(filePath: string): Promise<StudentRow[]> {
-  const buf = await fs.readFile(filePath);
-  const wb = XLSX.read(buf, { type: 'buffer' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json<StudentRow>(ws, { defval: '' });
+async function parseExcel(filePath: string): Promise<StudentRow[]> { // đọc file excel và chuyển thành dữ liệu
+  const buf = await fs.readFile(filePath); // đọc file excel
+  const wb = XLSX.read(buf, { type: 'buffer' }); // đọc file excel
+  const ws = wb.Sheets[wb.SheetNames[0]]; // đọc file excel
+  const rows = XLSX.utils.sheet_to_json<StudentRow>(ws, { defval: '' }); // đọc file excel
   return rows;
 }
 
-function normalizeAndValidate(rows: StudentRow[]) {// Chuẩn hóa và validate dữ liệu
-  const valid: ValidStudent[] = []; // Dữ liệu hợp lệ
-  const errors: RowError[] = []; // Lỗi theo dòng
+function normalizeAndValidate(rows: StudentRow[]) {// chuẩn hóa và validate dữ liệu
+  const valid: ValidStudent[] = []; // dữ liệu hợp lệ
+  const errors: RowError[] = []; // lỗi theo dòng
 
   rows.forEach((r, idx) => { // idx bắt đầu từ 0
     const rowIndex = idx + 2; // +2 vì header thường ở dòng 1
@@ -89,7 +89,7 @@ async function ensureClassesExist(classNames: string[]) { // Kiểm tra các l�
 async function upsertStudents(data: ValidStudent[]) {
   if (data.length === 0) return { upserted: 0, matchedUpdated: 0 };
 
-  // Upsert dùng studentId là duy nhất; nếu bạn dùng email là unique thì thay filter theo email
+  // upsert dùng studentId là duy nhất; nếu dùng email là unique thì thay filter theo email
   const ops = data.map(d => ({
     updateOne: {
       filter: { studentId: d.studentId },
@@ -106,16 +106,16 @@ async function upsertStudents(data: ValidStudent[]) {
     },
   }));
 
-  const result = await StudentModel.bulkWrite(ops, { ordered: false });
+  const result = await StudentModel.bulkWrite(ops, { ordered: false }); // bulkWrite là phương thức để thực hiện các thao tác trên nhiều bản ghi cùng lúc
   const upserted = result.upsertedCount || 0;
   // matchedUpdated: các bản ghi có match và được update (nếu có thay đổi)
   const matchedUpdated = (result.modifiedCount || 0) + (result.matchedCount || 0) - upserted;
   return { upserted, matchedUpdated };
 }
 
-const StudentImportService = {
+const StudentImportService = { 
   async importFromExcel(filePath: string) {
-    let rows: StudentRow[] = [];
+    let rows: StudentRow[] = []; 
     try {
       rows = await parseExcel(filePath);
       if (rows.length === 0) {

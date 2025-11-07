@@ -11,7 +11,7 @@ import '../student/login_screen.dart';
 import '../../models/student.dart';
 
 class OtherScreen extends StatefulWidget {
-  final Student? student;
+  final Student? student; 
   const OtherScreen({super.key, this.student});
 
   @override
@@ -239,7 +239,7 @@ class _SectionHeader extends StatelessWidget {
 class _ListItem extends StatelessWidget {
   final IconData icon;
   final String title;
-  final VoidCallback onTap;
+  final VoidCallback onTap; // 
   final Color? textColor;
 
   const _ListItem({

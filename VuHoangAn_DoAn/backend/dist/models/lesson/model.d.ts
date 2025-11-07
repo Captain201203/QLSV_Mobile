@@ -6,8 +6,9 @@ export interface ILesson extends Document {
     description: string;
     order: number;
 }
-declare const _default: mongoose.Model<ILesson, {}, {}, {}, mongoose.Document<unknown, {}, ILesson> & ILesson & {
+declare const LessonModel: mongoose.Model<ILesson, {}, {}, {}, mongoose.Document<unknown, {}, ILesson> & ILesson & {
     _id: mongoose.Types.ObjectId;
 }, any>;
-export default _default;
+export declare const fixLessonIndexes: () => Promise<void>;
+export default LessonModel;
 //# sourceMappingURL=model.d.ts.map

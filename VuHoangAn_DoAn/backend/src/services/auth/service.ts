@@ -2,21 +2,20 @@ import { generateOTP, sendOTPEmail } from '../../utils/mailer.js';
 import AccountModel from '../../models/account/model.js';
 import bcrypt from 'bcrypt';
 
-// In-memory store for OTP sessions
-const otpSessions = new Map<string, {
-  email: string;
-  otp: string;
-  createdAt: Date;
-  verified: boolean;
+
+const otpSessions = new Map<string, { // tạo một bản đồ lưu trữ các phiên OTP trong bộ nhớ
+  email: string; // email liên kết với phiên
+  otp: string; // mã OTP được tạo
+  createdAt: Date; // thời gian tạo phiên
+  verified: boolean; // trạng thái đã xác thực OTP hay chưa
 }>();
 
-// Clean up expired sessions every 5 minutes
-setInterval(() => {
+
+setInterval(() => { // tạo một hàm chạy định kỳ để xóa các phiên OTP đã hết hạn
   const now = new Date();
-  for (const [sessionId, session] of otpSessions.entries()) {
-    // Remove sessions older than 5 minutes
-    if (now.getTime() - session.createdAt.getTime() > 5 * 60 * 1000) {
-      otpSessions.delete(sessionId);
+  for (const [sessionId, session] of otpSessions.entries()) { // duyệt qua tất cả các phiên trong bộ nhớ, entries dùng để lấy cả khóa và giá trị
+    if (now.getTime() - session.createdAt.getTime() > 5 * 60 * 1000) { // nếu phiên đã tồn tại hơn 5 phút
+      otpSessions.delete(sessionId); // xóa phiên khỏi bộ nhớ
     }
   }
 }, 5 * 60 * 1000);
@@ -24,18 +23,17 @@ setInterval(() => {
 export const AuthService = {
   // Other auth methods...
 
-  async initiatePasswordReset(email: string) {
-    // Check if email exists in database
-    const account = await AccountModel.findOne({ email });
+  async initiatePasswordReset(email: string) { // khởi tạo quy trình đặt lại mật khẩu
+    const account = await AccountModel.findOne({ email }); // kiểm tra email có tồn tại không
     if (!account) {
       throw { status: 404, message: 'Email không tồn tại trong hệ thống' };
     }
 
-    // Generate OTP and session
+    // nếu có email trong hệ thống, tạo mã OTP và phiên làm việc
     const otp = generateOTP();
-    const sessionId = Math.random().toString(36).substring(2);
+    const sessionId = Math.random().toString(36).substring(2); // tạo sessionId ngẫu nhiên
 
-    // Store in memory
+    // tạo một phiên OTP mới và lưu vào bộ nhớ, .set là phương thức để thêm mới vào bản đồ
     otpSessions.set(sessionId, {
       email,
       otp,
@@ -43,14 +41,14 @@ export const AuthService = {
       verified: false
     });
 
-    // Send OTP email
+    // gọi hàm gửi email với mã OTP từ utils/mailer.ts
     await sendOTPEmail(email, otp);
 
     return { sessionId };
   },
 
-  async verifyOTP(sessionId: string, providedOTP: string) {
-    const session = otpSessions.get(sessionId);
+  async verifyOTP(sessionId: string, providedOTP: string) { // xác thực mã OTP do người dùng cung cấp
+    const session = otpSessions.get(sessionId); // lấy phiên từ bộ nhớ theo sessionId
     if (!session) {
       throw { status: 400, message: 'Phiên làm việc không hợp lệ hoặc đã hết hạn' };
     }
@@ -59,7 +57,7 @@ export const AuthService = {
       throw { status: 400, message: 'Mã OTP này đã được sử dụng' };
     }
 
-    const expired = new Date().getTime() - session.createdAt.getTime() > 5 * 60 * 1000;
+    const expired = new Date().getTime() - session.createdAt.getTime() > 5 * 60 * 1000; // kiểm tra xem mã OTP đã hết hạn (5 phút) chưa
     if (expired) {
       otpSessions.delete(sessionId);
       throw { status: 400, message: 'Mã OTP đã hết hạn' };
@@ -75,23 +73,25 @@ export const AuthService = {
     return true;
   },
 
+
+  // hàm đặt lại mật khẩu
   async resetPassword(sessionId: string, newPassword: string) {
     const session = otpSessions.get(sessionId);
     if (!session || !session.verified) {
       throw { status: 400, message: 'Phiên làm việc không hợp lệ hoặc chưa xác thực OTP' };
     }
 
-    // Hash new password
+    // Mã hóa mật khẩu mới
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // Update password in database
-    await AccountModel.findOneAndUpdate(
-      { email: session.email },
-      { $set: { password: hashedPassword } }
+    
+    await AccountModel.findOneAndUpdate( // cập nhật mật khẩu trong database
+      { email: session.email }, // tìm email trong database
+      { $set: { password: hashedPassword } } // cập nhật mật khẩu mới, $set là operator để cập nhật
     );
 
     // Clear session
-    otpSessions.delete(sessionId);
+    otpSessions.delete(sessionId); // xóa phiên khỏi bộ nhớ
   }
 };

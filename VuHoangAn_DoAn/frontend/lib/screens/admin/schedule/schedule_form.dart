@@ -131,7 +131,7 @@ class _ScheduleFormState extends State<ScheduleForm> {
         _endTime!.minute,
       );
 
-      final payload = {
+      final payload = { // payload là dữ liệu gửi đi từ client đến server
         'className': _selectedClassName,
         'subjectId': _selectedSubjectId,
         'subjectName': _subjects.firstWhere((s) => s.subjectId == _selectedSubjectId).subjectName,
@@ -142,13 +142,13 @@ class _ScheduleFormState extends State<ScheduleForm> {
         'note': _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
       };
 
-      if (widget.schedule == null) {
+      if (widget.schedule == null) { // nếu không có schedule thì tạo mới
         await ScheduleService.create(payload);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Tạo lịch thành công')),
         );
       } else {
-        await ScheduleService.update(widget.schedule!.id, payload);
+        await ScheduleService.update(widget.schedule!.id, payload); // cập nhật schedule
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Cập nhật lịch thành công')),
         );

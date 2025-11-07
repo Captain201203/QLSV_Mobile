@@ -3,7 +3,7 @@ import { ForgotPasswordController } from '../../controller/auth/forgotPassword.j
 
 const router = express.Router();
 
-// Password reset flow
+
 router.post('/auth/forgot-password', ForgotPasswordController.requestReset);
 router.post('/auth/verify-otp', ForgotPasswordController.verifyOTP);
 router.post('/auth/reset-password', ForgotPasswordController.resetPassword);

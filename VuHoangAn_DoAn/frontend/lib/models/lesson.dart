@@ -13,7 +13,7 @@ class Lesson{
     required this.order,
   });
 
-  factory Lesson.fromJson(Map<String,dynamic>json) => Lesson(
+  factory Lesson.fromJson(Map<String,dynamic>json) => Lesson( // factory constructor là phương thức tạo đối tượng từ JSON
     lessonId: json['lessonId'] ?? '',
     courseId: json['courseId'] ?? '',
     title: json['title'] ?? '',

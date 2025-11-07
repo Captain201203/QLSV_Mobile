@@ -3,29 +3,27 @@ import * as XLSX from 'xlsx';
 import StudentModel from '../../models/student/model.js';
 import ClassModel from '../../models/class/model.js';
 function excelDateToJSDate(v) {
-    // Hỗ trợ cả serial và chuỗi ISO/locale
     if (typeof v === 'number') {
-        // Excel serial date: tính từ 1899-12-30
-        const epoch = new Date(Date.UTC(1899, 11, 30));
-        const ms = Math.round(v * 24 * 60 * 60 * 1000);
-        return new Date(epoch.getTime() + ms);
+        const epoch = new Date(Date.UTC(1899, 11, 30)); // tạo một ngày tháng năm 1899-12-30
+        const ms = Math.round(v * 24 * 60 * 60 * 1000); // tính toán số mili giây từ ngày sinh
+        return new Date(epoch.getTime() + ms); // tạo một ngày tháng năm từ số mili giây
     }
     if (typeof v === 'string') {
-        const d = new Date(v);
+        const d = new Date(v); // tạo một ngày tháng năm từ chuỗi
         return isNaN(d.getTime()) ? null : d;
     }
     return null;
 }
 async function parseExcel(filePath) {
-    const buf = await fs.readFile(filePath);
-    const wb = XLSX.read(buf, { type: 'buffer' });
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+    const buf = await fs.readFile(filePath); // đọc file excel
+    const wb = XLSX.read(buf, { type: 'buffer' }); // đọc file excel
+    const ws = wb.Sheets[wb.SheetNames[0]]; // đọc file excel
+    const rows = XLSX.utils.sheet_to_json(ws, { defval: '' }); // đọc file excel
     return rows;
 }
 function normalizeAndValidate(rows) {
-    const valid = []; // Dữ liệu hợp lệ
-    const errors = []; // Lỗi theo dòng
+    const valid = []; // dữ liệu hợp lệ
+    const errors = []; // lỗi theo dòng
     rows.forEach((r, idx) => {
         const rowIndex = idx + 2; // +2 vì header thường ở dòng 1
         const studentId = String(r.studentId || '').trim(); // Chuẩn hóa: chuyển sang string và trim khoảng trắng
@@ -60,7 +58,7 @@ async function ensureClassesExist(classNames) {
 async function upsertStudents(data) {
     if (data.length === 0)
         return { upserted: 0, matchedUpdated: 0 };
-    // Upsert dùng studentId là duy nhất; nếu bạn dùng email là unique thì thay filter theo email
+    // upsert dùng studentId là duy nhất; nếu dùng email là unique thì thay filter theo email
     const ops = data.map(d => ({
         updateOne: {
             filter: { studentId: d.studentId },
@@ -76,7 +74,7 @@ async function upsertStudents(data) {
             upsert: true,
         },
     }));
-    const result = await StudentModel.bulkWrite(ops, { ordered: false });
+    const result = await StudentModel.bulkWrite(ops, { ordered: false }); // bulkWrite là phương thức để thực hiện các thao tác trên nhiều bản ghi cùng lúc
     const upserted = result.upsertedCount || 0;
     // matchedUpdated: các bản ghi có match và được update (nếu có thay đổi)
     const matchedUpdated = (result.modifiedCount || 0) + (result.matchedCount || 0) - upserted;

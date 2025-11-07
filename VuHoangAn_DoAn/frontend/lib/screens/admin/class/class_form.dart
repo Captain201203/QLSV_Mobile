@@ -4,7 +4,7 @@ import '../../../models/class.dart';
 import '../../../services/class_service.dart';
 
 class ClassFormPage extends StatefulWidget {
-  final Class? classes;
+  final Class? classes; // sửa tên biến từ 'class' thành 'classes' để tránh xung đột với từ khóa 'class' trong Dart
 
   const ClassFormPage({super.key, this.classes});
 

@@ -5,6 +5,7 @@
     "outDir": "./dist",
 
     /* ⚙️ Môi trường Node.js */
+    "types": ["node", "uuid"],
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",

@@ -1,18 +1,19 @@
 "use client";
 
 import { Lesson } from "@/app/types/lesson";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface Props {
   lesson: Lesson;
-  courseId: string; // cần biết để định tuyến đúng
+  courseId: string; 
   onEdit: () => void;
   onDelete: () => void;
+  onManageQuiz: (lessionId: string) => void;
 }
 
-export default function LessonCard({ lesson, courseId, onEdit, onDelete }: Props) {
-  const router = useRouter();
+export default function LessonCard({ lesson, courseId, onEdit, onDelete, onManageQuiz }: Props) {
+  const router = useRouter(); 
 
   const handleOpenDocument = () => {
     router.push(`/admin/course/${courseId}/lesson/${lesson.lessonId}/document`);
@@ -23,13 +24,14 @@ export default function LessonCard({ lesson, courseId, onEdit, onDelete }: Props
       className="bg-white shadow-md rounded-xl p-5 hover:shadow-lg transition cursor-pointer"
       onClick={handleOpenDocument}
     >
+      <h1 className="text-2xl font-bold mb-2 text-black">{lesson.lessonId}</h1>
       <h2 className="text-lg font-bold mb-2 text-black">{lesson.title}</h2>
       <p className="text-black mb-4">{lesson.description || "Không có mô tả"}</p>
       <p className="text-sm text-black">Thứ tự: {lesson.order}</p>
 
       <div
         className="flex justify-between items-center mt-4"
-        onClick={(e) => e.stopPropagation()} // chặn click lan ra card
+        onClick={(e) => e.stopPropagation()} 
       >
         <button
           onClick={onEdit}
@@ -44,6 +46,7 @@ export default function LessonCard({ lesson, courseId, onEdit, onDelete }: Props
           <Trash2 size={18} /> Xóa
         </button>
       </div>
+       
     </div>
   );
 }

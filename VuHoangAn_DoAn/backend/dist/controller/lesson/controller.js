@@ -27,7 +27,13 @@ export const LessonController = {
     },
     async getByCourse(req, res) {
         try {
-            const { courseId } = req.params;
+            const raw = String(req.params.courseId);
+            const courseId = (() => { try {
+                return decodeURIComponent(raw);
+            }
+            catch {
+                return raw;
+            } })();
             if (!courseId) {
                 return res.status(400).json({ message: "Course ID parameter is required" });
             }
@@ -40,7 +46,14 @@ export const LessonController = {
     },
     async create(req, res) {
         try {
-            const { lessonId, courseId, title, description, order } = req.body;
+            const rawCourse = String(req.body.courseId ?? '');
+            const courseId = (() => { try {
+                return decodeURIComponent(rawCourse);
+            }
+            catch {
+                return rawCourse;
+            } })();
+            const { lessonId, title, description, order } = req.body;
             if (!lessonId || !courseId || !title || order === undefined) {
                 return res.status(400).json({ message: "lessonId, courseId, title, and order are required" });
             }
@@ -54,7 +67,12 @@ export const LessonController = {
             res.status(201).json(lesson);
         }
         catch (error) {
-            res.status(500).json({ message: error.message });
+            const msg = String(error?.message ?? 'Internal error');
+            if (msg.includes('does not exist'))
+                return res.status(404).json({ message: msg });
+            if (msg.includes('already exists'))
+                return res.status(409).json({ message: msg });
+            res.status(500).json({ message: msg });
         }
     },
     async update(req, res) {

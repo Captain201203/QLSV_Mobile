@@ -5,7 +5,6 @@ import 'api_service.dart';
 class AuthService {
   static const String _endpoint = "/auth";
 
-  // Existing methods ...
 
   static Future<Map<String, dynamic>> requestPasswordReset(String email) async { // tạo hàm requestPasswordReset nhận email
     try {
@@ -38,7 +37,7 @@ class AuthService {
     }
   }
 
-  // Helper to handle error responses
+
   static String _handleError(dynamic error) { // hàm xử lý lỗi
     if (error is http.Response) {
       try {

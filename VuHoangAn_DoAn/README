@@ -1,0 +1,54 @@
+luồng hoạt động của 1 số chức năng 
+
+1. Quên mật khẩu:
+- khi người dùng nhập email, backend nhận body JSON thông qua URL /auth/forgot-password và kiểm tra email trong model Account, nếu email 
+không tồn tại thì trả lỗi, nếu tồn tại thì tạo phiên OTP và gửi email thông qua phương thức ForgorPasswordController.
+
+- khi người dùng nhập OTP và nhấn nút xác thực, backend nhận body JSON thông qua URL /auth/verify-otp 
+và kiểm tra OTP trong bản đồ lưu trữ OTP sessions trong bộ nhớ. Nếu OTP không chính xác thì trả lỗi, 
+nếu chính xác thì chuyển sang trang đổi mật khẩu.
+
+- khi người dùng nhập mật khẩu mới và nhấn nút đặt lại mật khẩu, backend nhận body JSON thông qua URL /auth/reset-password
+và kiểm tra sessionId và mật khẩu mới. Nếu sessionId không tồn tại hoặc mật khẩu mới không hợp lệ thì trả lỗi,
+nếu hợp lệ thì cập nhật mật khẩu mới trong database thông qua phương thức resetPassword, findOneAndUpdate ở services/auth/service.ts.
+
+2. Import excel
+- Khi người dùng upload file ( file được upload thông qua thư viện file_picker), service từ frontend sẽ 
+gửi file đến backend thông qua URL /students/upload-excel, controller nhận file và kiểm tra file có phải là file excel không,
+nếu không phải thì thông báo lỗi, nếu phải thì gọi phương thức importFromExcel ở services/student/import.ts để import dữ liệu từ file excel.
+
+- service làm nhiệm vụ đọc và parse file excel, chuẩn hóa và validate dữ liệu, kiểm tra lớp tồn tại, upsert dữ liệu vào database.
+
+- client nhận được report từ backend và hiển thị lên giao diện.
+
+3. Tự động thêm sinh viên vào lớp khi thêm sinh viên
+- Khi người dùng nhập xong thông tin sinh viên và bấm tạo sinh viên, gửi body lên backend, controller 
+nhận body và gọi phương thức create ở services/student/service.ts để tạo sinh viên mới. Kiểm tra lớp 
+có tồn tại không, nếu không tồn tại thì thông báo lỗi, nếu tồn tại thì tạo sinh viên rồi thêm 
+sinh viên vào lớp thông qua phương thức push ở services/student/service.ts.
+
+- service ở client truy cập api để lấy dữ liệu và hiển thị lên giao diện.
+
+4. Tạo thời khóa biểu
+- khi người dùng nhập xong thông tin thời khóa biểu và bấm tạo thời khóa biểu, gửi body lên backend, 
+controller nhận body và gọi phương thức create ở services/schedule/service.ts để tạo thời khóa biểu mới.
+- service kiểm tra lớp và môn học có tồn tại không, kiểm tra trùng lịch không, nếu thỏa điều kiện thìthì tạo lịch mới.
+- service client truy cập api để lấy dữ liệu và hiển thị lên giao diện.
+
+5. Sinh viên xem được thời khóa biểu
+- khi sinh viên đăng nhập vào hệ thống, controller nhận request và gọi phương thức getByClass ở services/schedule/service.ts để lấy thời khóa biểu theo lớp.
+- service lấy thời khóa biểu theo lớp qua api router.get/schedules/class/:className và phương thức getByClassInRange ở services/schedule/service.ts để lấy thời khóa biệu theo lớp.
+- client nhận được report từ backend và hiển thị lên giao diện.
+
+6. Tạo điểm cho sinh viên
+- khi người dùng nhập xong thông tin điểm và bấm tạo điểm, gửi body lên backend, controller nhận body và gọi phương thức create ở services/score/service.ts để tạo điểm mới.
+- service kiểm tra sinh viên và môn học có tồn tại không, nếu không tồn tại thì thông báo lỗi, nếu tồn tại thì tạo điểm mới.
+- service client truy cập api để lấy dữ liệu và hiển thị lên giao diện.
+
+7. Sinh viên xem được điểm số
+- khi sinh viên đăng nhập vào hệ thống, controller nhận request và gọi phương thức getByStudentAndSubject ở services/score/service.ts để lấy điểm số theo sinh viên và môn học.
+- service lấy điểm số theo sinh viên và môn học qua api router.get/scores/student/:studentId/subject/:subjectId và phương thức getByStudentAndSubject ở services/score/service.ts để lấy điểm số theo sinh viên và môn học.
+- client nhận được report từ backend và hiển thị lên giao diện.
+
+
+

@@ -13,6 +13,10 @@ import lessonRoute from "./routes/lesson/route.js";
 import lessonItemRoute from "./routes/lessonItem/route.js";
 import scoreRoute from "./routes/score/route.js";
 import forgotPasswordRoute from "./routes/auth/forgotPassword.js";
+import documentRoute from "./routes/document/route.js";
+import { fixLessonIndexes } from "./models/lesson/model.js";
+import quizRouter from "./routes/exam/quiz/route.js";
+import quizSubmissionRouter from "./routes/exam/quizSubmission/route.js";
 // Load environment variables
 dotenv.config({ path: ".env.local" });
 const app = express();
@@ -45,10 +49,15 @@ app.use("/lessons", lessonRoute);
 app.use("/", forgotPasswordRoute);
 app.use("/lessonItems", lessonItemRoute);
 app.use("/scores", scoreRoute);
+app.use("/documents", documentRoute);
+app.use("/quizzes", quizRouter);
+app.use("/quizSubmissions", quizSubmissionRouter);
 const startServer = async () => {
     try {
         await connectDB();
         console.log("✅ MongoDB connected successfully!");
+        // Sửa index cho Lesson model (xóa index cũ và tạo compound index)
+        await fixLessonIndexes();
         const PORT = process.env.PORT || 3000;
         app.listen(PORT, () => {
             console.log(`🚀 Server is running on http://localhost:${PORT}`);
