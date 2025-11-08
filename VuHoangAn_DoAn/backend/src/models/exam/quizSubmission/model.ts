@@ -7,6 +7,11 @@ export interface IQuizSubmission extends Document{
     answers: IAnswer[];
     score: number;
     submittedAt: Date;
+    status: 'completed'| 'locked'| 'allowed' ;
+    attempts: number;
+    unlockedBy?: string;
+    unlockedAt?: Date;
+    lockedAt?: Date;
 }
 
 export interface IAnswer{
@@ -28,6 +33,11 @@ const QuizSubmissionSchema: Schema = new Schema({
     answers: {type: [AnswerSchema], default: []},
     score: {type: Number, required: true},
     submittedAt: {type: Date, default: Date.now},
+    status: {type: String, enum: ['completed', 'locked']},
+    attempts: {type: Number, default: 1},
+    unlockedBy: {type: String, ref:'Account'},
+    unlockedAt: {type: Date},
+    lockedAt: {type: Date}
 });
 
 export default mongoose.model<IQuizSubmission>('QuizSubmission', QuizSubmissionSchema);

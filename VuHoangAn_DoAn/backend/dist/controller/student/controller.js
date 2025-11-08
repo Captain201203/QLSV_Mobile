@@ -136,7 +136,15 @@ export const StudentController = {
             if (!isValidPassword) {
                 return res.status(401).json({ message: 'Mật khẩu không đúng' });
             }
-            // 3. Nếu là sinh viên, tìm thông tin sinh viên
+            // 3. Nếu là admin, trả về thông tin admin
+            if (account.role === 'admin') {
+                return res.status(200).json({
+                    email: account.email,
+                    studentName: account.studentName,
+                    role: account.role
+                });
+            }
+            // 4. Nếu là sinh viên, tìm thông tin sinh viên
             if (account.role === 'sinh viên') {
                 const student = await StudentModel.findOne({ email });
                 if (student) {
@@ -146,7 +154,7 @@ export const StudentController = {
                     });
                 }
             }
-            return res.status(403).json({ message: 'Tài khoản không phải là sinh viên' });
+            return res.status(403).json({ message: 'Tài khoản không hợp lệ' });
         }
         catch (error) {
             console.error('Login error:', error);

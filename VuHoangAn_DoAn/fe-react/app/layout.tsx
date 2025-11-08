@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Sidebar from "./components/SideBar";
+import { AuthProvider } from "./contexts/authContext";
+import LayoutContent from "./components/LayoutContent";
 
 export const metadata: Metadata = {
-  title: "Admin Panel",
-  description: "Quản lý sinh viên - React + Next.js",
+  title: "QLSV System",
+  description: "Hệ thống quản lý sinh viên",
 };
 
 export default function RootLayout({
@@ -14,9 +15,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body className="flex bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-white">
-        <Sidebar />
-        <main className="flex-1 p-6">{children}</main>
+      <body className="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-white">
+        <AuthProvider>
+          <LayoutContent>{children}</LayoutContent>
+        </AuthProvider>
       </body>
     </html>
   );

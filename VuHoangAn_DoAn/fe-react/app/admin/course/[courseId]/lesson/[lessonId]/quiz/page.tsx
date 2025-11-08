@@ -89,6 +89,8 @@ export default function QuizListPage() {
           <QuizCard
             key={quiz.quizId}
             quiz={quiz}
+            courseId={courseId as string}
+            lessonId={lessonId as string}
             onEdit={() => handleEditQuiz(quiz.quizId)}
             onDelete={() => handleDeleteQuiz(quiz.quizId)}
           />

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Question, Option } from '@/app/types/quiz';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Trash2, PlusCircle, Car } from 'lucide-react';
+import { Trash2, PlusCircle } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Card, CardContent } from '@/components/ui/card';
-import { Label } from '@radix-ui/react-label';
+import { Label } from '@/components/ui/label';
 
 interface Props{
     question: Question;
@@ -60,6 +60,7 @@ const QuestionListItem: React.FC<Props> = ({question, index, onUpdate, onDelete}
 
         const newCorrectAnswer = correctAnswer === optionId ? '' : correctAnswer;
         setOptions(updatedOptions);
+        setCorrectAnswer(newCorrectAnswer);
         onUpdate({...question, text, options: updatedOptions, correctAnswer: newCorrectAnswer});
     };
 
@@ -71,7 +72,7 @@ const QuestionListItem: React.FC<Props> = ({question, index, onUpdate, onDelete}
     return (
         <Card className='border-l-4 border-l-blue-500'>
             <CardContent className='p-4'>
-                <div className='flex item-stat justify-betwwen mb-4'>
+                <div className='flex items-center justify-between mb-4'>
                     <div className='flex-1'>
                         <div className='flex items-center gap-2 mb-2'>
                             <span className='font-semibold text-lg'>Câu {index + 1}</span>
@@ -96,10 +97,10 @@ const QuestionListItem: React.FC<Props> = ({question, index, onUpdate, onDelete}
 
                 <div className='space-y-2 ml-4'>
                     <Label className="text-sm text-gray-600 mb-2 block">
-
+                        Các lựa chọn (chọn đáp án đúng bằng radio button):
                     </Label>
                     {options.map((option, optionIndex)=>(
-                        <div key={option.optionId} className='flex item-center gap-2'>
+                        <div key={option.optionId} className='flex items-center gap-2'>
                             <input 
                             type="radio"
                             name={`correct-answer-${question.questionId}`}
@@ -135,8 +136,8 @@ const QuestionListItem: React.FC<Props> = ({question, index, onUpdate, onDelete}
                     onClick={handleAddOption}
                     className='mt-2'
                     >
-                        <PlusCircle className='h-4 w-4 mr-2'></PlusCircle>
-
+                        <PlusCircle className='h-4 w-4 mr-2' />
+                        Thêm lựa chọn
                     </Button>
                 </div>
 

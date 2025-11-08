@@ -9,6 +9,15 @@ export const QuizSubMissionService = { // service cho quiz submission
 
         if(!quiz) throw new Error("Quiz not found"); // nếu quiz không tồn tại thì throw error
 
+
+        const existingSubmission = await QuizSubmissionModel.findOne({
+            quizId: data.quizId,
+            studentId: data.studentId
+        })
+
+        if(existingSubmission && (existingSubmission.status === 'locked' || existingSubmission.status === 'completed')){
+            throw new Error('Bài kiểm tra đã bị khóa. Vui lòng liên hệ admin')
+        }
         let correctCount = 0; // đếm số câu đúng 
         const checkedAnswers = data.answers.map((ans)=>{ // kiểm tra câu trả lời của sinh viên và tính điểm
             const question = quiz.questions.find((q)=>q.questionId === ans.questionId); // tìm câu hỏi theo questionId
@@ -24,6 +33,17 @@ export const QuizSubMissionService = { // service cho quiz submission
         // tính điểm, nếu không có câu hỏi thì điểm là 0
         const score = quiz.questions.length > 0 ? Math.round((correctCount/quiz.questions.length)*100) : 0;
 
+
+        if(existingSubmission && existingSubmission.status === 'allowed'){
+            existingSubmission.answers = checkedAnswers;
+            existingSubmission.score = score;
+            existingSubmission.submittedAt = new Date();
+            existingSubmission.status = 'completed';
+            existingSubmission.lockedAt = new Date();
+            existingSubmission.attempts = (existingSubmission.attempts || 1) + 1;
+            return existingSubmission.save()
+
+        }
         // tạo mới submission
         const submission = new QuizSubmissionModel({
             submissionId: randomUUID(),
@@ -31,6 +51,9 @@ export const QuizSubMissionService = { // service cho quiz submission
             studentId: data.studentId,
             answers: checkedAnswers,
             score,
+            status: 'completed',
+            lockedAt: new Date(),
+            attempts: 1,
         });
         return submission.save();
 
@@ -39,6 +62,49 @@ export const QuizSubMissionService = { // service cho quiz submission
 
     async getByStudent(studentId: string){
         return QuizSubmissionModel.find({studentId});
+    },
+
+    async getByQuiz(quizId: string){
+        return QuizSubmissionModel.find({quizId}).populate('studentId', 'studentName studentId, email ')
+    },
+
+    async getByQuizAndStudent( quizId: string, studentId: string){
+        const submission = await QuizSubmissionModel.findOne({quizId, studentId});
+        
+    },
+
+    async unlockSubmission (submissionId: string, adminId: string, reason?: string){
+        const submission = await QuizSubmissionModel.findOne({submissionId});
+        if(!submission) throw new Error("Submission not found")
+        
+            submission.status = 'allowed';
+            submission.unlockedBy = adminId;
+            submission.unlockedAt = new Date();
+            return submission.save(); 
+
+    },
+
+    async lockSubmission(submissionId: string){
+        const submission = await QuizSubmissionModel.findOne({submissionId});
+        if(!submission) throw new Error ("Submission not found");
+
+        submission.status = 'locked';
+        submission.lockedAt = new Date();
+        return submission.save()
+    },
+
+    async getQuizStatus(quizId: string, studentId: string){
+        const submission = await QuizSubmissionModel.findOne({quizId, studentId});
+        if(!submission){
+            return { status: 'not_started', canTake: true}
+        }
+
+        return {
+            status: submission.status,
+            canTake: submission.status === 'allowed' || !submission,
+            submission: submission
+        }
     }
+
 }
 

@@ -57,4 +57,19 @@ export const studentService = {
     const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to delete student");
   },
+
+  async login(email: string, password: string): Promise<Student & { role: string }> {
+    const res = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || "Đăng nhập thất bại");
+    }
+    
+    return res.json();
+  },
 };
