@@ -11,6 +11,11 @@ const QuizSubmissionSchema = new Schema({
     answers: { type: [AnswerSchema], default: [] },
     score: { type: Number, required: true },
     submittedAt: { type: Date, default: Date.now },
+    status: { type: String, enum: ['completed', 'locked', 'allowed'] },
+    attempts: { type: Number, default: 1 },
+    unlockedBy: { type: String, ref: 'Account' },
+    unlockedAt: { type: Date },
+    lockedAt: { type: Date }
 });
 export default mongoose.model('QuizSubmission', QuizSubmissionSchema);
 //# sourceMappingURL=model.js.map

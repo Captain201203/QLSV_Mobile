@@ -59,7 +59,7 @@ export default function StudentCoursesPage() {
 
         {/* Content */}
         <div className="container mx-auto p-6">
-          <h2 className="text-3xl font-bold mb-6">Danh sách khóa học</h2>
+          <h2 className="text-3xl font-bold mb-6">Danh sách khóa học </h2>
 
           {loading ? (
             <div className="text-center py-10">Đang tải...</div>

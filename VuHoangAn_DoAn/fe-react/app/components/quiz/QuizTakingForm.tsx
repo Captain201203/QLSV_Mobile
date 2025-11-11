@@ -62,8 +62,31 @@ export default function QuizTakingForm({
     return () => clearInterval(timer);
   }, [timeRemaining, submitting]);
 
+  useEffect(()=>{
+    const checkStatus = async ()=>{
+      try{
+        const quizStatus = await QuizSubmissionService.getQuizStatus(quizId, studentId);
+        if(!quizStatus.canTake){
+          if(quizStatus.submission){
+            router.push(
+              `/student/course/${courseId}/lesson/${lessonId}/quiz/${quizId}/result?submissionId=${quizStatus.submission?.submissionId}`
+            );
+          }else{
+            alert("Bạn không có quyền làm bài kiểm tra");
+            router.back();
+          }
+        }
+      }catch(error){
+        console.error("Failed to get quiz status", error);
+      }
+    };
+    checkStatus();
+  },[quizId, studentId, courseId, lessonId, router]);
+
+
   // Tự động nộp bài khi hết thời gian
   useEffect(() => {
+    
     if (timeRemaining === 0 && !submitting && quiz) {
       const autoSubmit = async () => {
         await handleSubmit(true);
@@ -72,6 +95,8 @@ export default function QuizTakingForm({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRemaining]);
+
+  
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

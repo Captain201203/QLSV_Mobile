@@ -1,6 +1,7 @@
 import QuizModel from "../../../models/exam/quiz/model.js";
 import QuizSubmissionModel, {IQuizSubmission} from "../../../models/exam/quizSubmission/model.js";
 import { randomUUID } from "crypto";
+import StudentModel from "../../../models/student/model.js";
 
 export const QuizSubMissionService = { // service cho quiz submission
     // tạo mới submission, kiểm tra quiz và sinh viên có tồn tại không, tính điểm và lưu vào database
@@ -64,9 +65,20 @@ export const QuizSubMissionService = { // service cho quiz submission
         return QuizSubmissionModel.find({studentId});
     },
 
-    async getByQuiz(quizId: string){
-        return QuizSubmissionModel.find({quizId}).populate('studentId', 'studentName studentId, email ')
-    },
+    async getByQuiz(quizId: string) {
+        const submissions = await QuizSubmissionModel.find({ quizId });
+      
+        // Nếu muốn lấy thêm thông tin sinh viên:
+        // import StudentModel ở đầu file
+        const studentIds = submissions.map((s) => s.studentId);
+        const students = await StudentModel.find({ studentId: { $in: studentIds } });
+      
+        // Ghép dữ liệu lại
+        return submissions.map((s) => ({
+          ...s.toObject(),
+          student: students.find((st) => st.studentId === s.studentId),
+        }));
+      },
 
     async getByQuizAndStudent( quizId: string, studentId: string){
         const submission = await QuizSubmissionModel.findOne({quizId, studentId});
@@ -96,12 +108,16 @@ export const QuizSubMissionService = { // service cho quiz submission
     async getQuizStatus(quizId: string, studentId: string){
         const submission = await QuizSubmissionModel.findOne({quizId, studentId});
         if(!submission){
-            return { status: 'not_started', canTake: true}
+            return { status: 'not_started', canTake: true, submission: null}
         }
+
+        // canTake = true nếu status là 'allowed' hoặc 'not_started'
+        // canTake = false nếu status là 'locked' hoặc 'completed' (chưa được mở khóa)
+        const canTake = submission.status === 'allowed' || submission.status === 'not_started';
 
         return {
             status: submission.status,
-            canTake: submission.status === 'allowed' || !submission,
+            canTake: canTake,
             submission: submission
         }
     }

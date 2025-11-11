@@ -26,15 +26,21 @@ export const QuizSubmissionService = {
         return res.data
     },
 
-    async getQuizzStatus(quizId: string, studentId: string): Promise<QuizStatus>{
+    async getQuizStatus(quizId: string, studentId: string): Promise<QuizStatus>{
         const res = await axios.get(`${BASE_URL}/quiz/${quizId}/student/${studentId}/status`);
         return res.data
     },
 
     async unlockSubmission(submissionId: string, adminId: string, reason?: string): Promise<QuizSubmission>{
-        const res = await axios.put(`${BASE_URL}/${submissionId}/lock`)
-        return res.data
-    }
+        const res = await axios.put(`${BASE_URL}/${submissionId}/unlock`, {
+            adminId,
+            reason
+        });
+        return res.data;
+    },
 
-
+    async lockSubmission(submissionId: string): Promise<QuizSubmission>{
+        const res = await axios.put(`${BASE_URL}/${submissionId}/lock`);
+        return res.data;
+    },
 }

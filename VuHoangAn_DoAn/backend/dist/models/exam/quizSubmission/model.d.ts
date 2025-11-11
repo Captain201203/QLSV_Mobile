@@ -6,6 +6,11 @@ export interface IQuizSubmission extends Document {
     answers: IAnswer[];
     score: number;
     submittedAt: Date;
+    status: 'completed' | 'locked' | 'allowed' | 'not_started';
+    attempts: number;
+    unlockedBy?: string;
+    unlockedAt?: Date;
+    lockedAt?: Date;
 }
 export interface IAnswer {
     questionId: string;

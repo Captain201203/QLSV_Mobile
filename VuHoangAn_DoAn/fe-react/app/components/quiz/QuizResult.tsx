@@ -134,3 +134,5 @@ export default function QuizResult({ submission, courseId, lessonId, quizId }: P
   );
 }
 
+
+

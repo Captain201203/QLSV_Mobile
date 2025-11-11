@@ -58,7 +58,7 @@ app.use("/", forgotPasswordRoute);
 app.use("/lessonItems", lessonItemRoute);
 app.use("/scores", scoreRoute);
 app.use("/documents", documentRoute);
-app.use("/quizzes",quizRouter);
+app.use("/quizzes", quizRouter);
 app.use("/quizSubmissions", quizSubmissionRouter);
 const startServer = async () => {
   try {

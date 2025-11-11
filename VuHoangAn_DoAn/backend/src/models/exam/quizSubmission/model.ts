@@ -7,7 +7,7 @@ export interface IQuizSubmission extends Document{
     answers: IAnswer[];
     score: number;
     submittedAt: Date;
-    status: 'completed'| 'locked'| 'allowed' ;
+    status: 'completed'| 'locked'| 'allowed' | 'not_started' ;
     attempts: number;
     unlockedBy?: string;
     unlockedAt?: Date;
@@ -33,7 +33,7 @@ const QuizSubmissionSchema: Schema = new Schema({
     answers: {type: [AnswerSchema], default: []},
     score: {type: Number, required: true},
     submittedAt: {type: Date, default: Date.now},
-    status: {type: String, enum: ['completed', 'locked']},
+    status: {type: String, enum: ['completed', 'locked', 'allowed']},
     attempts: {type: Number, default: 1},
     unlockedBy: {type: String, ref:'Account'},
     unlockedAt: {type: Date},

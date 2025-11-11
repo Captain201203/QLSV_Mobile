@@ -21,7 +21,7 @@ export default function QuizStatusCheck({quizId, studentId, courseId, lessonId}:
     useEffect(()=>{
         const checkStatus = async ()=> {
             try{
-                const quizStatus = await QuizSubmissionService.getQuizzStatus(quizId, studentId);
+                const quizStatus = await QuizSubmissionService.getQuizStatus(quizId, studentId);
                 setStatus(quizStatus);
 
             }catch(error){

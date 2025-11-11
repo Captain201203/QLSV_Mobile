@@ -6,11 +6,10 @@ export interface QuizSubmission{
     score: number;
     submittedAt: Date;
     status: 'completed' | 'locked' | 'allowed';
-    attemps: number;
+    attempts: number;
     unlockedBy?: string;
     unlockedAt?: Date;
     lockedAt?: Date;
-
 }
 
 export interface Answer{
