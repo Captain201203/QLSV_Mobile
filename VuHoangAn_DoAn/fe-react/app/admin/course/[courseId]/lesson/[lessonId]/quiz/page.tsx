@@ -18,9 +18,9 @@ export default function QuizListPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { // khi component được mount hoặc lessonId thay đổi thì gọi fetchQuizzes
     if (typeof lessonId === 'string') {
-      const fetchQuizzes = async () => {
+      const fetchQuizzes = async () => { // lấy danh sách bài kiểm tra theo bài học
         try {
           const data = await QuizService.getByLesson(lessonId);
           setQuizzes(data);
@@ -34,13 +34,13 @@ export default function QuizListPage() {
     }
   }, [lessonId]);
 
-  const handleCreateQuiz = () => {
+  const handleCreateQuiz = () => { // hiển thị form tạo mới bài kiểm tra
     setShowForm(true);
   };
 
-  const handleSubmitNewQuiz = async (data: any) => {
-    if (typeof lessonId !== 'string') return;
-    try {
+  const handleSubmitNewQuiz = async (data: any) => { // lưu bài kiểm tra mới
+    if (typeof lessonId !== 'string') return; // đảm bảo lessonId là chuỗi
+    try { // gọi API tạo mới bài kiểm tra
       await QuizService.create({ ...data, lessonId });
       setShowForm(false);
       const refreshed = await QuizService.getByLesson(lessonId);
@@ -69,7 +69,7 @@ export default function QuizListPage() {
 
   if (loading) return <div>Đang tải...</div>;
 
-  return (
+  return ( // hiển thị danh sách bài kiểm tra và form tạo mới
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Quản lý Bài kiểm tra</h1>
@@ -79,13 +79,13 @@ export default function QuizListPage() {
           </Button>
         )}
       </div>
-      {showForm ? (
+      {showForm ? ( // hiển thị form tạo mới bài kiểm tra
         <div className="mb-6">
           <QuizForm onSubmitAction={handleSubmitNewQuiz} />
         </div>
       ) : null}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {quizzes.map(quiz => (
+        {quizzes.map(quiz => ( // hiển thị từng bài kiểm tra
           <QuizCard
             key={quiz.quizId}
             quiz={quiz}

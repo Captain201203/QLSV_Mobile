@@ -3,7 +3,12 @@
 import { Lesson } from "@/app/types/lesson";
 import { Pencil, Trash2, FileText, CheckCircle2, BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { LessonProgress } from "@/app/services/lessonProgressService";
+type LessonProgressSummary = {
+  completionPercentage: number;
+  isCompleted: boolean;
+  totalQuestions: number;
+  correctAnswers: number;
+};
 
 interface Props {
   lesson: Lesson;
@@ -11,7 +16,7 @@ interface Props {
   onEdit: () => void;
   onDelete: () => void;
   onManageQuiz: (lessionId: string) => void;
-  progress?: LessonProgress | null; // Optional progress data
+  progress?: LessonProgressSummary | null; // Optional progress data
   showProgress?: boolean; // Flag to show/hide progress section
 }
 

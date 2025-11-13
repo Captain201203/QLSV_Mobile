@@ -80,7 +80,7 @@ export const QuizService = {
     },
 
     async update(quizId:string, data: Partial<IQuiz>){ // cập nhật bài kiểm tra 
-        return QuizModel.findOneAndUpdate({quizId}, data, {new: true }) 
+        return QuizModel.findOneAndUpdate({quizId}, data, {new: true })
     },
 
     async delete(quizId:string){ // xóa bài kiểm tra 

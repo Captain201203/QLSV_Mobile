@@ -12,7 +12,7 @@ export default function CoursePage() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [showForm, setShowForm] = useState(false);
 
-  const fetchCourses = async () => {
+  const fetchCourses = async () => { // lấy danh sách khóa học
     try {
       const data = await courseService.getAll();
       setCourses(data);
@@ -22,11 +22,11 @@ export default function CoursePage() {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { // khi component được mount thì gọi fetchCourses
     fetchCourses();
   }, []);
 
-  const handleCreate = async (data: Course) => {
+  const handleCreate = async (data: Course) => { // tạo mới khóa học
     try {
       await courseService.create(data);
       setShowForm(false);
@@ -36,7 +36,7 @@ export default function CoursePage() {
     }
   };
 
-  const handleUpdate = async (data: Course) => {
+  const handleUpdate = async (data: Course) => { // cập nhật khóa học
     try {
       await courseService.update(data.courseId, data);
       setShowForm(false);
@@ -47,7 +47,7 @@ export default function CoursePage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string) => { // xóa khóa học
     if (!confirm("Bạn có chắc muốn xóa khóa học này?")) return;
     try {
       await courseService.deleteCourse(id);
@@ -57,7 +57,7 @@ export default function CoursePage() {
     }
   };
 
-  const handleEdit = (course: Course) => {
+  const handleEdit = (course: Course) => { // chỉnh sửa khóa học
     setSelectedCourse(course);
     setShowForm(true);
   };
@@ -67,7 +67,7 @@ export default function CoursePage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Quản lý khóa học</h1>
         <button
-          onClick={() => {
+          onClick={() => { // mở form thêm khóa học
             setSelectedCourse(null);
             setShowForm(true);
           }}
@@ -80,7 +80,7 @@ export default function CoursePage() {
       {showForm ? (
         <div className="mb-6 bg-white shadow rounded-lg p-4 relative">
           <button
-            onClick={() => {
+            onClick={() => { // đóng form
               setShowForm(false);
               setSelectedCourse(null);
             }}
@@ -89,15 +89,15 @@ export default function CoursePage() {
             <X />
           </button>
           <CourseForm
-            course={selectedCourse}
-            onSubmit={selectedCourse ? handleUpdate : handleCreate}
-            onCancel={() => setShowForm(false)}
+            course={selectedCourse} // nếu có selectedCourse thì truyền vào để chỉnh sửa
+            onSubmit={selectedCourse ? handleUpdate : handleCreate} // nếu có selectedCourse thì gọi handleUpdate, không thì gọi handleCreate
+            onCancel={() => setShowForm(false)} // đóng form
           />
         </div>
       ) : null}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {courses.map((course) => (
+        {courses.map((course) => ( // hiển thị danh sách khóa học, map là lặp qua mảng courses và trả về một mảng các component CourseCard
           <CourseCard
             key={course.courseId}
             course={course}

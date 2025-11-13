@@ -4,24 +4,29 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { documentService } from "@/app/services/documentService";
+import { lessonExtraService } from "@/app/services/lessonVideoService";
 
-import { PlusCircle, Trash2, Save, Loader2, FileText } from "lucide-react";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  PlusCircle,
+  Trash2,
+  Save,
+  Loader2,
+  FileText,
+} from "lucide-react";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Lesson } from "@/app/types/lesson";
 
 // Import ReactQuill (soạn thảo nội dung)
 import "react-quill-new/dist/quill.snow.css";
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
-interface Props {
-  lesson: Lesson;
-  courseId: string; // cần biết để định tuyến đúng
-  onEdit: () => void;
-  onDelete: () => void;
-}
 interface Document {
   documentId?: string;
   lessonId: string;
@@ -32,21 +37,38 @@ interface Document {
 export default function DocumentPage() {
   const router = useRouter();
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
+
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string>("");
+  const [savingVideo, setSavingVideo] = useState<boolean>(false);
 
+  // ------------------ FETCH DATA ------------------
   useEffect(() => {
     const fetchDocs = async () => {
       try {
         const data = await documentService.getByLesson(lessonId);
         setDocuments(data);
       } catch (err) {
-        console.error(err);
+        console.error("Lỗi khi tải tài liệu:", err);
       }
     };
+
+    const fetchVideo = async () => {
+      try {
+        const res = await lessonExtraService.getVideoByLesson(lessonId);
+        setVideoUrl(res.videoUrl || "");
+      } catch (err) {
+        console.error("Lỗi khi tải video:", err);
+        setVideoUrl("");
+      }
+    };
+
     fetchDocs();
+    fetchVideo();
   }, [lessonId]);
 
+  // ------------------ CRUD TÀI LIỆU ------------------
   const handleAdd = () => {
     setDocuments((prev) => [...prev, { lessonId, title: "", content: "" }]);
   };
@@ -70,8 +92,8 @@ export default function DocumentPage() {
       }
       alert("💾 Lưu tài liệu thành công!");
     } catch (error) {
+      console.error("Lưu thất bại:", error);
       alert("❌ Lưu tài liệu thất bại!");
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -83,7 +105,7 @@ export default function DocumentPage() {
       try {
         await documentService.delete(doc.documentId);
       } catch (error) {
-        console.error(error);
+        console.error("Lỗi khi xóa tài liệu:", error);
       }
     }
     setDocuments((prev) => prev.filter((_, i) => i !== index));
@@ -95,14 +117,30 @@ export default function DocumentPage() {
     setDocuments(updated);
   };
 
-  // 👉 Hàm điều hướng sang trang quản lý bài kiểm tra
-  const goToQuizPage = () => {
-     router.push(`/admin/course/${courseId}/lesson/${lessonId}/quiz`);
+  // ------------------ VIDEO HANDLER ------------------
+  const handleSaveVideo = async () => {
+    try {
+      setSavingVideo(true);
+      await lessonExtraService.setVideoByLesson(lessonId, videoUrl.trim());
+      alert("💾 Lưu video thành công!");
+    } catch (e) {
+      console.error("Lưu video thất bại:", e);
+      alert("❌ Lưu video thất bại!");
+    } finally {
+      setSavingVideo(false);
+    }
   };
 
+  // ------------------ ĐIỀU HƯỚNG ------------------
+  const goToQuizPage = () => {
+    router.push(`/admin/course/${courseId}/lesson/${lessonId}/quiz`);
+  };
+
+  // ------------------ JSX ------------------
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div className="p-6 max-w-6xl mx-auto space-y-10">
+      {/* Tiêu đề & nút chức năng */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
         <h1 className="text-2xl font-bold text-gray-800">📚 Tài liệu bài học</h1>
 
         <div className="flex gap-3">
@@ -114,12 +152,17 @@ export default function DocumentPage() {
             <FileText size={18} /> Quản lý bài kiểm tra
           </Button>
 
-          <Button onClick={handleAdd} className="flex items-center gap-2">
+          <Button
+            onClick={handleAdd}
+            className="flex items-center gap-2"
+            disabled={loading}
+          >
             <PlusCircle size={18} /> Thêm khối nội dung
           </Button>
         </div>
       </div>
 
+      {/* Danh sách tài liệu */}
       <div className="space-y-6">
         {documents.map((doc, index) => (
           <Card key={doc.documentId || index} className="shadow-sm border border-gray-200">
@@ -152,12 +195,17 @@ export default function DocumentPage() {
                 onClick={() => handleSave(index)}
                 className="cursor-pointer flex items-center gap-2"
               >
-                {loading ? <Loader2 className="animate-spin w-4 h-4" /> : <Save size={18} />}
+                {loading ? (
+                  <Loader2 className="animate-spin w-4 h-4" />
+                ) : (
+                  <Save size={18} />
+                )}
                 Lưu
               </Button>
 
               <Button
                 variant="destructive"
+                disabled={loading}
                 onClick={() => handleDelete(index)}
                 className="cursor-pointer flex items-center gap-2"
               >
@@ -174,6 +222,72 @@ export default function DocumentPage() {
           </div>
         )}
       </div>
+
+      {/* Khu vực video bài học */}
+      <div className="mt-10 p-4 border rounded-lg bg-gray-50">
+        <h2 className="text-lg font-semibold mb-3">🎬 Video bài học</h2>
+
+        <Input
+          type="text"
+          value={videoUrl}
+          onChange={(e) => setVideoUrl(e.target.value)}
+          placeholder="Dán link YouTube/MP4, ví dụ: https://youtu.be/xxxx hoặc https://cdn.example.com/file.mp4"
+          className="mb-3"
+        />
+
+        <div className="flex gap-3">
+          <Button
+            onClick={handleSaveVideo}
+            disabled={savingVideo}
+            className="cursor-pointer flex items-center gap-2"
+          >
+            {savingVideo ? (
+              <Loader2 className="animate-spin w-4 h-4" />
+            ) : null}
+            {savingVideo ? "Đang lưu..." : "Lưu video"}
+          </Button>
+        </div>
+
+        {/* Xem thử video */}
+        {videoUrl && (
+          <div className="mt-6">
+            <p className="text-sm text-gray-600 mb-2">Xem thử:</p>
+            {isYoutubeUrl(videoUrl) ? (
+              <iframe
+                width="100%"
+                height="420"
+                className="rounded-md"
+                src={convertToYoutubeEmbed(videoUrl)}
+                title="Video bài học (preview)"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <video
+                controls
+                className="w-full rounded-md"
+                src={videoUrl}
+              />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
+}
+
+// ------------------ Helper functions ------------------
+function isYoutubeUrl(url: string) {
+  return /youtu\.be|youtube\.com/i.test(url);
+}
+
+function convertToYoutubeEmbed(url: string) {
+  try {
+    const short = url.match(/youtu\.be\/([^?&]+)/i)?.[1];
+    const watch = url.match(/[?&]v=([^&]+)/i)?.[1];
+    const id = short || watch;
+    return id ? `https://www.youtube.com/embed/${id}` : url;
+  } catch {
+    return url;
+  }
 }

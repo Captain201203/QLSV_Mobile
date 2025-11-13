@@ -14,9 +14,9 @@ export default function QuizEditPage() {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  useEffect(() => { // khi component được mount hoặc quizId thay đổi thì gọi fetchQuiz
     if (typeof quizId === 'string' && quizId !== 'new') {
-      const fetchQuiz = async () => {
+      const fetchQuiz = async () => { // lấy thông tin bài kiểm tra theo quizId
         try {
           const data = await QuizService.getById(quizId);
           setQuiz(data);
@@ -33,9 +33,9 @@ export default function QuizEditPage() {
     }
   }, [quizId]);
 
-  const handleQuizSubmit = async (quizData: Quiz) => {
+  const handleQuizSubmit = async (quizData: Quiz) => { // lưu bài kiểm tra (tạo mới hoặc cập nhật)
     try {
-      if (quizId === 'new') {
+      if (quizId === 'new') { // tạo mới bài kiểm tra. nếu quizId là 'new'
         await QuizService.create({ ...quizData, lessonId: lessonId as string });
         alert("Tạo bài kiểm tra thành công!");
       } else {
@@ -55,7 +55,7 @@ export default function QuizEditPage() {
 
   if (loading) return <div className="p-6">Đang tải...</div>;
 
-  return (
+  return ( // hiển thị trình quản lý bài kiểm tra
     <QuizManager
       quiz={quiz}
       lessonId={lessonId as string}

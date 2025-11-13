@@ -12,7 +12,7 @@ export const QuizSubMissionService = {
             quizId: data.quizId,
             studentId: data.studentId
         });
-        if (existingSubmission && (existingSubmission.status === 'locked' || existingSubmission.status === 'completed')) {
+        if (existingSubmission && (existingSubmission.status === 'locked' || existingSubmission.status === 'completed')) { // nếu submission đã bị khóa hoặc đã hoàn thành thì không cho phép nộp bài
             throw new Error('Bài kiểm tra đã bị khóa. Vui lòng liên hệ admin');
         }
         let correctCount = 0; // đếm số câu đúng 
@@ -29,13 +29,13 @@ export const QuizSubMissionService = {
         });
         // tính điểm, nếu không có câu hỏi thì điểm là 0
         const score = quiz.questions.length > 0 ? Math.round((correctCount / quiz.questions.length) * 100) : 0;
-        if (existingSubmission && existingSubmission.status === 'allowed') {
+        if (existingSubmission && existingSubmission.status === 'allowed') { // nếu submission đã tồn tại và trạng thái là allowed thì cập nhật lại submission
             existingSubmission.answers = checkedAnswers;
             existingSubmission.score = score;
             existingSubmission.submittedAt = new Date();
             existingSubmission.status = 'completed';
             existingSubmission.lockedAt = new Date();
-            existingSubmission.attempts = (existingSubmission.attempts || 1) + 1;
+            existingSubmission.attempts = (existingSubmission.attempts || 1) + 1; // tăng số lần làm bài lên 1
             return existingSubmission.save();
         }
         // tạo mới submission
@@ -73,9 +73,9 @@ export const QuizSubMissionService = {
         const submission = await QuizSubmissionModel.findOne({ submissionId });
         if (!submission)
             throw new Error("Submission not found");
-        submission.status = 'allowed';
-        submission.unlockedBy = adminId;
-        submission.unlockedAt = new Date();
+        submission.status = 'allowed'; // thay đổi trạng thái thành allowed
+        submission.unlockedBy = adminId; // lưu adminId người mở khóa
+        submission.unlockedAt = new Date(); // lưu thời gian mở khóa
         return submission.save();
     },
     async lockSubmission(submissionId) {

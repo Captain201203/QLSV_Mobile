@@ -14,25 +14,25 @@ interface Props{
     onDelete: (questionId: string) => void;
 }
 
-const QuestionListItem: React.FC<Props> = ({question, index, onUpdate, onDelete}) => {
-    const [text, setText] = useState(question.text);
-    const [options, setOptions] = useState<Option[]>(question.options);
-    const [correctAnswer, setCorrectAnswer] = useState(question.correctAnswer);
+const QuestionListItem: React.FC<Props> = ({question, index, onUpdate, onDelete}) => { // hiển thị và chỉnh sửa một câu hỏi trong danh sách, react.fc là functional component
+    const [text, setText] = useState(question.text); // nội dung câu hỏi
+    const [options, setOptions] = useState<Option[]>(question.options); // các lựa chọn
+    const [correctAnswer, setCorrectAnswer] = useState(question.correctAnswer); // đáp án đúng
 
-    useEffect(() => {
-        setText(question.text);
+    useEffect(() => { // khi question prop thay đổi thì cập nhật state tương ứng
+        setText(question.text); 
         setOptions(question.options);
         setCorrectAnswer(question.correctAnswer);
 
     }, [question]);
 
-    const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
+    const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) =>{ // cập nhật nội dung câu hỏi
         const newText = e.target.value;
         setText(newText);
         onUpdate({...question, text: newText, options, correctAnswer});
     };
 
-    const handleOptionChange = (optionId: string, newtext: string)=>{
+    const handleOptionChange = (optionId: string, newtext: string)=>{// cập nhật nội dung lựa chọn
         const updatedOptions = options.map(opt=>
             opt.optionId === optionId ? {...opt, text: newtext}:opt
         );
@@ -40,23 +40,23 @@ const QuestionListItem: React.FC<Props> = ({question, index, onUpdate, onDelete}
         onUpdate({...question, text, options: updatedOptions, correctAnswer});
     };
 
-    const handleAddOption = () => {
+    const handleAddOption = () => { // thêm lựa chọn mới
         const newOption: Option = {
-            optionId: uuidv4(),
-            text: `Lựa chọn ${options.length + 1}`
+            optionId: uuidv4(), // tạo id ngẫu nhiên cho lựa chọn
+            text: `Lựa chọn ${options.length + 1}` // nội dung mặc định + 1
         }
 
-        const updateOptions = [...options, newOption];
+        const updateOptions = [...options, newOption]; // thêm lựa chọn mới vào danh sách
         setOptions(updateOptions);
         onUpdate({...question, text, options: updateOptions, correctAnswer});
     }
 
-    const handleDeleteOption = (optionId: string) => {
+    const handleDeleteOption = (optionId: string) => { // xóa lựa chọn
         if(options.length <=2){
             alert("Phải có ít nhất 2 lựa chọn");
             return
         }
-        const updatedOptions = options.filter(opt=>opt.optionId!= optionId);
+        const updatedOptions = options.filter(opt=>opt.optionId!= optionId); // lọc bỏ lựa chọn bị xóa
 
         const newCorrectAnswer = correctAnswer === optionId ? '' : correctAnswer;
         setOptions(updatedOptions);
@@ -64,7 +64,7 @@ const QuestionListItem: React.FC<Props> = ({question, index, onUpdate, onDelete}
         onUpdate({...question, text, options: updatedOptions, correctAnswer: newCorrectAnswer});
     };
 
-    const handleCorrecAnswerChange = (optionId: string) => {
+    const handleCorrecAnswerChange = (optionId: string) => { // chọn đáp án đúng
         setCorrectAnswer(optionId);
         onUpdate({...question, text, options, correctAnswer: optionId});
     };

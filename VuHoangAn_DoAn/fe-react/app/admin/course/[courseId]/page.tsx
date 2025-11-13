@@ -17,7 +17,7 @@ export default function LessonPage() {
   const [showLessonForm, setShowLessonForm] = useState(false);
   // Quiz management is handled on a dedicated route per lesson
 
-  const fetchLessons = async () => {
+  const fetchLessons = async () => { // lấy danh sách bài học theo khóa học
     try {
       const data = await lessonService.getByCourse(courseId as string);
       setLessons(data);
@@ -27,11 +27,11 @@ export default function LessonPage() {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { // khi component được mount hoặc courseId thay đổi thì gọi fetchLessons
     fetchLessons();
   }, [courseId]);
 
-  const handleCreateLesson = async (data: Lesson) => {
+  const handleCreateLesson = async (data: Lesson) => { // tạo mới bài học
     try {
       await lessonService.create(data);
       setShowLessonForm(false);
@@ -41,7 +41,7 @@ export default function LessonPage() {
     }
   };
 
-  const handleUpdateLesson = async (data: Lesson) => {
+  const handleUpdateLesson = async (data: Lesson) => { // cập nhật bài học
     try {
       await lessonService.update(data.lessonId, data);
       setShowLessonForm(false);
@@ -52,7 +52,7 @@ export default function LessonPage() {
     }
   };
 
-  const handleDeleteLesson = async (lessonId: string) => {
+  const handleDeleteLesson = async (lessonId: string) => { // xóa bài học
     if (!confirm("Bạn có chắc muốn xóa bài học này?")) return;
     try {
       await lessonService.delete(lessonId);
@@ -62,12 +62,12 @@ export default function LessonPage() {
     }
   };
 
-  const handleEditLesson = (lesson: Lesson) => {
+  const handleEditLesson = (lesson: Lesson) => { // chỉnh sửa bài học
     setSelectedLesson(lesson);
     setShowLessonForm(true);
   };
 
-  const handleShowQuizForm = (lessonId: string) => {
+  const handleShowQuizForm = (lessonId: string) => { // chuyển đến trang quản lý quiz của bài học
     router.push(`/admin/course/${courseId}/lesson/${lessonId}/quiz`);
   };
 
@@ -86,7 +86,7 @@ export default function LessonPage() {
           <h1 className="text-2xl font-bold">Danh sách bài học</h1>
         </div>
         <button
-          onClick={() => {
+          onClick={() => { // mở form thêm bài học
             setSelectedLesson(null);
             setShowLessonForm(true);
           }}
@@ -96,10 +96,10 @@ export default function LessonPage() {
         </button>
       </div>
 
-      {showLessonForm && (
+      {showLessonForm && ( // hiển thị form thêm/chỉnh sửa bài học
         <div className="mb-6 bg-white shadow rounded-lg p-4 relative">
           <button
-            onClick={() => {
+            onClick={() => { // đóng form
               setShowLessonForm(false);
               setSelectedLesson(null);
             }}
@@ -108,10 +108,10 @@ export default function LessonPage() {
             <X />
           </button>
           <LessonForm
-            lesson={selectedLesson}
-            courseId={courseId as string}
-            onSubmit={selectedLesson ? handleUpdateLesson : handleCreateLesson}
-            onCancel={() => setShowLessonForm(false)}
+            lesson={selectedLesson} // nếu có selectedLesson thì truyền vào để chỉnh sửa
+            courseId={courseId as string} // truyền courseId để gán cho bài học mới
+            onSubmit={selectedLesson ? handleUpdateLesson : handleCreateLesson} // nếu có selectedLesson thì gọi handleUpdateLesson, không thì gọi handleCreateLesson
+            onCancel={() => setShowLessonForm(false)} // đóng form
           />
         </div>
       )}
@@ -119,9 +119,9 @@ export default function LessonPage() {
       {/* Quiz CRUD is navigated to a separate page */}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {lessons.map((lesson) => (
-          <LessonCard
-            key={lesson.lessonId}
+        {lessons.map((lesson) => ( // hiển thị danh sách bài học
+          <LessonCard 
+            key={lesson.lessonId} 
             lesson={lesson}
             courseId={courseId as string}
             onEdit={() => handleEditLesson(lesson)}

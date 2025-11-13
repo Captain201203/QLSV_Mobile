@@ -1,175 +1,58 @@
-import { QuizService } from "./quizService";
-import { QuizSubmissionService } from "./quizSubmissionService";
-import { Quiz } from "../types/quiz";
-import { QuizSubmission } from "../types/quizSubmission";
-import { StringToBoolean } from "class-variance-authority/types";
+// fe-react/app/services/lessonProgressService.ts
+import axios from 'axios';
 
-export interface LessonProgress {
-    lessonId: string;
-    totalQuestions: number;
-    correctAnswers: number;
-    completionPercentage: number;
-    isCompleted: boolean;
-}
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
-export const LessonProgressService = {
+export type LessonContentProgress = {
+  content?: {
+    videoWatchedMs?: number;
+    videoDurationMs?: number;
+    videoCompleted?: boolean;
+    documentsCompleted?: boolean;
+  };
+};
 
-    async caculateProgress(lessonId: string, studentId: string): Promise<LessonProgress> {
-        try{
-            const quizzes = await QuizService.getByLesson(lessonId);
-            const totalQuestions = await quizzes.reduce((total, quiz) =>{
-                return total + quiz.questions.length;
-            },0);
+export const lessonProgressService = {
+  async setVideoProgress(lessonId: string, studentId: string, watchedMs: number, durationMs: number, isCompleted?: boolean) {
+    const res = await axios.put(`${API}/lesson-progress/lesson/${encodeURIComponent(lessonId)}/video`, {
+      studentId,
+      watchedMs,
+      durationMs,
+      isCompleted,
+    });
+    return res.data as LessonContentProgress;
+  },
 
-            if ( quizzes.length === 0 || totalQuestions === 0) {
-                return {
-                    lessonId,
-                    totalQuestions: 0,
-                    correctAnswers: 0,
-                    completionPercentage: 0,
-                    isCompleted: false,
-                };
-        }
+  async setDocumentCompleted(lessonId: string, studentId: string, isCompleted: boolean) {
+    const res = await axios.put(`${API}/lesson-progress/lesson/${encodeURIComponent(lessonId)}/document`, {
+      studentId,
+      isCompleted,
+    });
+    return res.data as LessonContentProgress;
+  },
 
-        const allSubmissions = await QuizSubmissionService.getByStudent(studentId);
+  async getProgress(lessonId: string, studentId: string) {
+    const res = await axios.get(`${API}/lesson-progress/lesson/${encodeURIComponent(lessonId)}`, {
+      params: { studentId, t: Date.now() },
+      headers: { 'Cache-Control': 'no-cache' },
+    });
+    return res.data as LessonContentProgress | null;
+  },
 
-        const lessonQuizIds = quizzes.map(q=>q.quizId);
-        const lessionSubmissionss = allSubmissions.filter(submission=>lessonQuizIds.includes(submission.quizId));
-        
-        let correctAnswers = 0;
+  // Tổng hợp 50/50 với quiz
+  async calculateLessonPercent(lessonId: string, studentId: string, numQuizzes: number, numCompleted: number, allMustBeDone = true) {
+    const prog = await this.getProgress(lessonId, studentId);
+    const contentDone = !!(prog?.content?.videoCompleted && prog?.content?.documentsCompleted);
+    const contentPercent = contentDone ? 50 : 0;
 
-        lessionSubmissionss.forEach(submission=>{
-            const correctCount = submission.answers.filter(answer=>answer.isCorrect).length;
-            correctAnswers += correctCount;
-        });
-
-        const completionPercentage = totalQuestions > 0
-        ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-
-        const isCompleted = completionPercentage >=100;
-        return {
-            lessonId,
-            totalQuestions,
-            correctAnswers,
-            completionPercentage,
-            isCompleted,
-        };
-        }catch(error){
-            console.error("Error calculating lesson progress:", error);
-            return {
-                lessonId,
-                totalQuestions: 0,
-                correctAnswers: 0,
-                completionPercentage: 0,
-                isCompleted: false,
-            }
-        }
-    },
-
-    async caculateProgressForLessons(
-        lessonIds: string[],
-        studentId: string,
-
-    ): Promise<Record<string, LessonProgress>>{
-        const allSubmissions: QuizSubmission[] = await QuizSubmissionService.getByStudent(studentId);
-
-        const progressMap: Record<string, LessonProgress> = {};
-
-        await Promise.all(
-            lessonIds.map(async (lessonId)=>{
-                const progress = await this.caculateProgressWithSubmissions(
-                    lessonId, 
-                    studentId, 
-                    allSubmissions
-                );
-                progressMap[lessonId] = progress;
-            })
-        );
-        return progressMap;
-
-    },
-
-    async caculateProgressWithSubmissions(
-        lessonId: string,
-        studentId: string,
-        allSubmissions: QuizSubmission[]
-    ): Promise<LessonProgress>{
-        try{
-            const quizzes: Quiz[] = await QuizService.getByLesson(lessonId);
-            console.log(`[ProgressService] LessonId: ${lessonId}, Quizzes found:`, quizzes.length);
-            console.log(`[ProgressService] Quizzes data:`, quizzes.map(q => ({
-                quizId: q.quizId,
-                title: q.title,
-                questionsCount: q.questions?.length || 0,
-                questions: q.questions
-            })));
-            
-            const totalQuestions  = quizzes.reduce((total, quiz)=>{ 
-                const qCount = quiz.questions?.length || 0;
-                console.log(`[ProgressService] Quiz ${quiz.quizId} has ${qCount} questions`);
-                return total + qCount;
-            },0);
-
-            console.log(`[ProgressService] Total questions for lesson ${lessonId}:`, totalQuestions);
-
-            if(quizzes.length === 0 || totalQuestions === 0){
-                console.log(`[ProgressService] No quizzes or questions for lesson ${lessonId}`);
-                return {
-                    lessonId,
-                    totalQuestions: 0,
-                    correctAnswers: 0,
-                    completionPercentage: 0,
-                    isCompleted: false,
-                };
-            }
-            
-            const lessonQuizIds = quizzes.map(q=>q.quizId);
-            console.log(`[ProgressService] Lesson quiz IDs:`, lessonQuizIds);
-            const lessonSubmissions = allSubmissions.filter(sub =>
-                lessonQuizIds.includes(sub.quizId)
-            );
-            console.log(`[ProgressService] Submissions found:`, lessonSubmissions.length);
-            console.log(`[ProgressService] Submissions data:`, lessonSubmissions.map(s => ({
-                submissionId: s.submissionId,
-                quizId: s.quizId,
-                answersCount: s.answers?.length || 0,
-                answers: s.answers
-            })));
-
-            let correctAnswers = 0;
-            lessonSubmissions.forEach(submission=>{
-                const correctCount = submission.answers.filter(answer=>answer.isCorrect).length;
-                console.log(`[ProgressService] Submission ${submission.submissionId}: ${correctCount} correct out of ${submission.answers.length}`);
-                correctAnswers += correctCount;
-            });
-            console.log(`[ProgressService] Total correct answers: ${correctAnswers} / ${totalQuestions}`);
-            
-            const completionPercentage = totalQuestions > 0
-            ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-            const isCompleted = completionPercentage === 100;
-            
-            console.log(`[ProgressService] Final result for ${lessonId}:`, {
-                totalQuestions,
-                correctAnswers,
-                completionPercentage,
-                isCompleted
-            });
-            return {
-                lessonId,
-                totalQuestions,
-                correctAnswers,
-                completionPercentage,
-                isCompleted
-            };
-        }catch(error){
-            console.error("Error calculating lesson progress with submissions:", error);
-            return {
-                lessonId,
-                totalQuestions: 0,
-                correctAnswers: 0,
-                completionPercentage: 0,
-                isCompleted: false,
-            };
-        }    
-    },
-}
+    let quizzesPercent = 0;
+    if (numQuizzes > 0) {
+      if (allMustBeDone) {
+        quizzesPercent = numCompleted === numQuizzes ? 50 : 0;
+      } else {
+        quizzesPercent = Math.round(50 * (numCompleted / numQuizzes));
+      }
+    }
+    return contentPercent + quizzesPercent;
+  },
+};

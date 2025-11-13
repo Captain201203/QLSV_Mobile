@@ -18,14 +18,14 @@ export default function DocumentEditor({ lessonId }: Props) {
   const [title, setTitle] = useState("");
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { // khi lessonId thay đổi thì tải tài liệu
     const load = async () => {
       const result = await documentService.getByLesson(lessonId);
       const list: DocumentData[] = Array.isArray(result)
         ? result
-        : result
-        ? [result]
-        : [];
+        : result // nếu API trả về một tài liệu đơn lẻ thì chuyển thành mảng
+        ? [result] // nếu chỉ có một tài liệu thì bọc vào mảng
+        : []; // đảm bảo luôn là mảng
       const first = list[0] ?? null;
       setDoc(first);
       setTitle(first?.title ?? "");
@@ -34,17 +34,17 @@ export default function DocumentEditor({ lessonId }: Props) {
     load();
   }, [lessonId]);
 
-  const handleSave = async () => {
+  const handleSave = async () => { // lưu tài liệu
     try {
       setSaving(true);
       if (doc) {
-        const updated = await documentService.update(doc.documentId, {
+        const updated = await documentService.update(doc.documentId, { // cập nhật tài liệu nếu đã có
           title,
           content,
         });
         setDoc(updated);
       } else {
-        const newDoc = await documentService.create({
+        const newDoc = await documentService.create({ // tạo mới tài liệu nếu chưa có
           lessonId,
           title,
           content,
@@ -60,7 +60,7 @@ export default function DocumentEditor({ lessonId }: Props) {
     }
   };
 
-  const modules = {
+  const modules = { // cấu hình thanh công cụ của ReactQuill
     toolbar: [
       [{ header: [1, 2, 3, false] }],
       ["bold", "italic", "underline", "strike"],

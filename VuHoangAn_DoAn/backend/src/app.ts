@@ -17,6 +17,10 @@ import documentRoute from "./routes/document/route.js";
 import { fixLessonIndexes } from "./models/lesson/model.js";
 import quizRouter from "./routes/exam/quiz/route.js";
 import quizSubmissionRouter from "./routes/exam/quizSubmission/route.js"
+import lessonExtraRoute from './routes/lessonVideo/route.js';
+import lessonProgressRoute from './routes/lessonProgress/route.js';
+// backend/src/app.ts
+
 
 
 // Load environment variables
@@ -60,6 +64,9 @@ app.use("/scores", scoreRoute);
 app.use("/documents", documentRoute);
 app.use("/quizzes", quizRouter);
 app.use("/quizSubmissions", quizSubmissionRouter);
+app.use('/api/lesson-extra', lessonExtraRoute);
+app.use('/api/lesson-progress', lessonProgressRoute);
+
 const startServer = async () => {
   try {
     await connectDB();
