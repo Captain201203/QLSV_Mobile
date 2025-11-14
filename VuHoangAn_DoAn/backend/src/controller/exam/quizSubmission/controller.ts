@@ -60,5 +60,16 @@ export const quizSubmissionController ={ // controller cho quiz submission
         }catch(error: any){
             res.status(400).json({error: error.message})
         }
-    }
+    },
+
+    async getScoresByLesson(req: Request,  res: Response) { // hàm lấy điểm quiz theo bài học cho sinh viên
+        try {
+            const { lessonId, studentId } = req.params;
+            const scores = await QuizSubMissionService.getScoresByLesson(lessonId, studentId);
+            res.json(scores);
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to get quiz scores' });
+        }
+}
+
 };

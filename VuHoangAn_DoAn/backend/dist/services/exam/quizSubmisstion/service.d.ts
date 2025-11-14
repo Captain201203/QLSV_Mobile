@@ -59,5 +59,6 @@ export declare const QuizSubMissionService: {
             _id: import("mongoose").Types.ObjectId;
         };
     }>;
+    getScoresByLesson(lessonId: string, studentId: string): Promise<number[]>;
 };
 //# sourceMappingURL=service.d.ts.map

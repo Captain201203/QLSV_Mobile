@@ -43,4 +43,10 @@ export const QuizSubmissionService = {
         const res = await axios.put(`${BASE_URL}/${submissionId}/lock`);
         return res.data;
     },
+
+   async getScoresByLesson(lessonId: string, studentId: string): Promise<number[]>{
+        // Thêm "/scores" vào cuối đường dẫn
+        const res = await axios.get(`${BASE_URL}/lesson/${lessonId}/student/${studentId}/scores`);
+        return res.data;
+    }
 }

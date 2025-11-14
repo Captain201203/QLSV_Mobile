@@ -11,7 +11,7 @@ export default function StudentPage() {
   useEffect(() => {
     if (!isLoading) {
       if (isAuthenticated) {
-        router.push("/student/courses");
+        router.push("/student/course");
       } else {
         router.push("/student/login");
       }

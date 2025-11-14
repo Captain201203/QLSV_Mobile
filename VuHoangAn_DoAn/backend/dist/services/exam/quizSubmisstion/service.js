@@ -28,7 +28,7 @@ export const QuizSubMissionService = {
             };
         });
         // tính điểm, nếu không có câu hỏi thì điểm là 0
-        const score = quiz.questions.length > 0 ? Math.round((correctCount / quiz.questions.length) * 100) : 0;
+        const score = quiz.questions.length > 0 ? Math.round((correctCount / quiz.questions.length) * 100) : 0; // tính điểm theo tỉ lệ phần trăm và làm tròn
         if (existingSubmission && existingSubmission.status === 'allowed') { // nếu submission đã tồn tại và trạng thái là allowed thì cập nhật lại submission
             existingSubmission.answers = checkedAnswers;
             existingSubmission.score = score;
@@ -99,6 +99,61 @@ export const QuizSubMissionService = {
             canTake: canTake,
             submission: submission
         };
+    },
+    async getScoresByLesson(lessonId, studentId) {
+        // --- BẮT ĐẦU SAO CHÉP LOGIC TỪ QuizService ---
+        console.log(`[QuizSubMissionService] Raw lessonId received: "${lessonId}"`);
+        let decodedLessonId = lessonId;
+        try {
+            decodedLessonId = decodeURIComponent(lessonId);
+            console.log(`[QuizSubMissionService] Decoded lessonId: "${decodedLessonId}"`);
+        }
+        catch (e) {
+            console.log(`[QuizSubMissionService] lessonId is not URL encoded, using original: "${lessonId}"`);
+            decodedLessonId = lessonId;
+        }
+        let encodedLessonId = lessonId;
+        try {
+            // Encode lại ID đã decode để đảm bảo chuẩn
+            encodedLessonId = encodeURIComponent(decodedLessonId);
+            console.log(`[QuizSubMissionService] Encoded lessonId: "${encodedLessonId}"`);
+        }
+        catch (e) {
+            encodedLessonId = lessonId;
+        }
+        // Tạo truy vấn $or để tìm tất cả các khả năng
+        const query = {
+            $or: [
+                { lessonId: decodedLessonId }, // "BÀI 1"
+                { lessonId: lessonId }, // "BÀI 1" (nếu nó không bị encode)
+                { lessonId: encodedLessonId } // "B%C3%80I%201"
+            ]
+        };
+        console.log(`[QuizSubMissionService] Query:`, JSON.stringify(query));
+        // 1. Lấy danh sách quiz thuộc lesson BẰNG TRUY VẤN MỚI
+        const quizzes = await QuizModel.find(query);
+        console.log(`[QuizSubMissionService] Found ${quizzes.length} quizzes`);
+        // --- KẾT THÚC SAO CHÉP LOGIC ---
+        // (Phần logic bên dưới giữ nguyên)
+        // nếu không có quiz → return []
+        if (!quizzes.length) {
+            console.log("[QuizSubMissionService] No quizzes found, returning [].");
+            return [];
+        }
+        const quizIds = quizzes.map(q => q.quizId);
+        console.log(`[QuizSubMissionService] Found quiz IDs:`, quizIds);
+        const submissions = await QuizSubmissionModel.find({
+            quizId: { $in: quizIds },
+            studentId,
+        });
+        console.log(`[QuizSubMissionService] Found ${submissions.length} submissions.`);
+        if (!submissions.length) {
+            return [];
+        }
+        // Trả về mảng điểm số
+        const scores = submissions.map(sub => sub.score);
+        console.log(`[QuizSubMissionService] Returning scores:`, scores);
+        return scores;
     }
 };
 //# sourceMappingURL=service.js.map

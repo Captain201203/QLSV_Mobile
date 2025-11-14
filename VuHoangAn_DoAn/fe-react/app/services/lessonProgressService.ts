@@ -1,5 +1,6 @@
 // fe-react/app/services/lessonProgressService.ts
 import axios from 'axios';
+import { QuizSubmissionService } from './quizSubmissionService';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
@@ -40,19 +41,27 @@ export const lessonProgressService = {
   },
 
   // Tổng hợp 50/50 với quiz
-  async calculateLessonPercent(lessonId: string, studentId: string, numQuizzes: number, numCompleted: number, allMustBeDone = true) {
-    const prog = await this.getProgress(lessonId, studentId);
-    const contentDone = !!(prog?.content?.videoCompleted && prog?.content?.documentsCompleted);
-    const contentPercent = contentDone ? 50 : 0;
+  async calculateLessonPercent(lessonId: string, studentId: string) {
 
-    let quizzesPercent = 0;
-    if (numQuizzes > 0) {
-      if (allMustBeDone) {
-        quizzesPercent = numCompleted === numQuizzes ? 50 : 0;
-      } else {
-        quizzesPercent = Math.round(50 * (numCompleted / numQuizzes));
-      }
-    }
-    return contentPercent + quizzesPercent;
-  },
+  const prog = await this.getProgress(lessonId, studentId);
+
+  const contentDone =
+    !!(prog?.content?.videoCompleted && prog?.content?.documentsCompleted);
+
+  const contentPercent = contentDone ? 50 : 0;
+
+  // --- lấy điểm quiz ---
+  const quizScores = await QuizSubmissionService.getScoresByLesson(lessonId, studentId);
+
+  // nếu không có quiz → quiz = 0
+  if (!quizScores.length) return contentPercent;
+
+  const avgScore = quizScores.reduce((t, q) => t + q, 0) / quizScores.length;
+
+  // quiz chiếm 50%
+  const quizzesPercent = (avgScore / 100) * 50;
+
+  return contentPercent + quizzesPercent;
+}
+
 };

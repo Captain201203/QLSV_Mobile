@@ -6,5 +6,6 @@ export declare const quizSubmissionController: {
     getQuizStatus(req: Request, res: Response): Promise<void>;
     unlockSubmission(req: Request, res: Response): Promise<void>;
     lockSubmission(req: Request, res: Response): Promise<void>;
+    getScoresByLesson(req: Request, res: Response): Promise<void>;
 };
 //# sourceMappingURL=controller.d.ts.map

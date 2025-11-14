@@ -57,6 +57,16 @@ export const quizSubmissionController = {
         catch (error) {
             res.status(400).json({ error: error.message });
         }
+    },
+    async getScoresByLesson(req, res) {
+        try {
+            const { lessonId, studentId } = req.params;
+            const scores = await QuizSubMissionService.getScoresByLesson(lessonId, studentId);
+            res.json(scores);
+        }
+        catch (err) {
+            res.status(500).json({ error: 'Failed to get quiz scores' });
+        }
     }
 };
 //# sourceMappingURL=controller.js.map
