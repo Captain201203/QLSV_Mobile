@@ -37,6 +37,8 @@ export default function StudentCourseDetailPage() {
       }
     >
   >({});
+  // THÊM STATE CHO TỔNG TIẾN ĐỘ KHÓA HỌC
+  const [courseProgressPercentage, setCourseProgressPercentage] = useState(0); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -136,6 +138,22 @@ export default function StudentCourseDetailPage() {
         }
 
         setLessonProgresses(result);
+        
+        // >>> THÊM LOGIC TÍNH TỔNG TIẾN ĐỘ KHÓA HỌC <<<
+        const totalLessons = lessons.length;
+        if (totalLessons > 0) {
+            const totalPercentage = Object.values(result).reduce(
+                (sum, progress) => sum + progress.percentage,
+                0
+            );
+            // Trung bình cộng phần trăm của tất cả các bài học
+            const overallProgress = Math.round(totalPercentage / totalLessons);
+            setCourseProgressPercentage(overallProgress);
+        } else {
+            setCourseProgressPercentage(0);
+        }
+        // >>> KẾT THÚC LOGIC TÍNH TỔNG TIẾN ĐỘ KHÓA HỌC <<<
+
       } catch (error) {
         console.error("❌ Failed to fetch lesson progresses", error);
       }
@@ -168,10 +186,31 @@ export default function StudentCourseDetailPage() {
               {course && (
                 <Card className="mb-6">
                   <CardHeader>
-                    <CardTitle className="text-2xl">{course.courseId}</CardTitle>
-                    <p className="text-gray-600">
+                    <div className="flex justify-between items-center mb-2">
+                      <CardTitle className="text-2xl">{course.courseId}</CardTitle>
+                    </div>
+                    
+                    <p className="text-gray-600 mb-4">
                       {course.description || "Không có mô tả"}
                     </p>
+                    
+                    {/* Hiển thị Tổng Tiến độ Khóa học */}
+                    <div className="mt-2">
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-medium text-gray-700">
+                                Tổng tiến độ khóa học:
+                            </span>
+                            <span className="text-sm font-bold text-blue-600">
+                                {courseProgressPercentage}%
+                            </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                                className="h-2 rounded-full transition-all bg-blue-500"
+                                style={{ width: `${courseProgressPercentage}%` }}
+                            />
+                        </div>
+                    </div>
                   </CardHeader>
                 </Card>
               )}
