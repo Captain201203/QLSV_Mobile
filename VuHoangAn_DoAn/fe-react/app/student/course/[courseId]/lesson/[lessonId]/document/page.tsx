@@ -10,6 +10,8 @@ import { ArrowLeft, FileText, ClipboardList, CheckCircle2 } from "lucide-react";
 import ProtectedRoute from "@/app/components/auth/proctectedRoute";
 import { lessonExtraService } from "@/app/services/lessonVideoService";
 import { lessonProgressService } from "@/app/services/lessonProgressService";
+import ChatBox from "@/app/components/AI/chatbox";
+
 
 /**
  * StudentDocumentPage
@@ -495,6 +497,7 @@ export default function StudentDocumentPage() {
     ------------------------- */
 
   return (
+    
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto p-6">
@@ -585,6 +588,7 @@ export default function StudentDocumentPage() {
           )}
         </div>
       </div>
+      <ChatBox documentId={documents[0]?.documentId} />
     </ProtectedRoute>
   );
 }

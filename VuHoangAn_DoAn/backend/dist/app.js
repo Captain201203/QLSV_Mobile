@@ -19,6 +19,7 @@ import quizRouter from "./routes/exam/quiz/route.js";
 import quizSubmissionRouter from "./routes/exam/quizSubmission/route.js";
 import lessonExtraRoute from './routes/lessonVideo/route.js';
 import lessonProgressRoute from './routes/lessonProgress/route.js';
+import chatRoute from './routes/chat/route.js';
 // backend/src/app.ts
 // Load environment variables
 dotenv.config({ path: ".env.local" });
@@ -57,6 +58,7 @@ app.use("/quizzes", quizRouter);
 app.use("/quizSubmissions", quizSubmissionRouter);
 app.use('/api/lesson-extra', lessonExtraRoute);
 app.use('/api/lesson-progress', lessonProgressRoute);
+app.use('/api/chat', chatRoute);
 const startServer = async () => {
     try {
         await connectDB();
